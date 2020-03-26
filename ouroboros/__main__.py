@@ -4,10 +4,10 @@ import pygame
 import random
 
 from pygame.locals import (
-    K_UP,
-    K_DOWN,
-    K_LEFT,
-    K_RIGHT,
+    K_UP, K_w,
+    K_DOWN, K_s,
+    K_LEFT, K_a,
+    K_RIGHT, K_d,
     K_ESCAPE,
     KEYDOWN,
     QUIT,
@@ -70,23 +70,23 @@ class Food:
 
 
 def decode_input(direction: str, pressed: Tuple[int]) -> str:
-    if pressed[K_UP]:
+    if pressed[K_UP] or pressed[K_w]:
         direction = MOVE_UP
-    if pressed[K_DOWN]:
+    if pressed[K_DOWN] or pressed[K_s]:
         direction = MOVE_DOWN
-    if pressed[K_LEFT]:
+    if pressed[K_LEFT] or pressed[K_a]:
         direction = MOVE_LEFT
-    if pressed[K_RIGHT]:
+    if pressed[K_RIGHT] or pressed[K_d]:
         direction = MOVE_RIGHT
     return direction
 
 
 def draw_background(screen: pygame.Surface) -> None:
     screen.fill(BACKGROUND_COLOUR)
-    for grid_row in range(CELL_HEIGHT):
-        pygame.draw.line(screen, GRID_COLOUR, (0, grid_row * CELL_SIZE), (DISPLAY_WIDTH, grid_row * CELL_SIZE))
-    for grid_column in range(CELL_WIDTH):
-        pygame.draw.line(screen, GRID_COLOUR, (grid_column * CELL_SIZE, 0), (grid_column * CELL_SIZE, DISPLAY_HEIGHT))
+    for grid_row in range(0, DISPLAY_HEIGHT, CELL_SIZE):
+        pygame.draw.line(screen, GRID_COLOUR, (0, grid_row), (DISPLAY_WIDTH, grid_row))
+    for grid_column in range(0, DISPLAY_WIDTH, CELL_SIZE):
+        pygame.draw.line(screen, GRID_COLOUR, (grid_column, 0), (grid_column, DISPLAY_HEIGHT))
 
 
 def play() -> None:
