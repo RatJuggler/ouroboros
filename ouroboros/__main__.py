@@ -77,6 +77,8 @@ def play():
                     return
         pressed = pygame.key.get_pressed()
         snake.move(pressed)
+        if snake.rectangle.topleft == food.rectangle.topleft:
+            food = Food()
         screen.fill(BACKGROUND_COLOUR)
         for grid_row in range(CELL_HEIGHT):
             pygame.draw.line(screen, GRID_COLOUR, (0, grid_row * CELL_SIZE), (DISPLAY_WIDTH, grid_row * CELL_SIZE))
@@ -85,7 +87,7 @@ def play():
         screen.blit(snake.surface, snake.rectangle)
         screen.blit(food.surface, food.rectangle)
         pygame.display.flip()
-        clock.tick(60)
+        clock.tick(15)
 
 
 if __name__ == '__main__':
