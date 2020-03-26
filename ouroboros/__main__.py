@@ -13,17 +13,42 @@ from pygame.locals import (
 DISPLAY_WIDTH = 800
 DISPLAY_HEIGHT = 600
 
+BLOCK_SIZE = 20
+MOVE_DELTA = 20
+
+
+class Snake:
+
+    def __init__(self):
+        self.surface = pygame.Surface((BLOCK_SIZE, BLOCK_SIZE))
+        green = (0, 255, 128)
+        self.surface.fill(green)
+        self.rectangle = self.surface.get_rect()
+
+    def move(self, pressed):
+        if pressed[K_UP]:
+            self.rectangle.move_ip(0, -MOVE_DELTA)
+        if pressed[K_DOWN]:
+            self.rectangle.move_ip(0, MOVE_DELTA)
+        if pressed[K_LEFT]:
+            self.rectangle.move_ip(-MOVE_DELTA, 0)
+        if pressed[K_RIGHT]:
+            self.rectangle.move_ip(MOVE_DELTA, 0)
+        if self.rectangle.left < 0:
+            self.rectangle.left = 0
+        if self.rectangle.right > DISPLAY_WIDTH:
+            self.rectangle.right = DISPLAY_WIDTH
+        if self.rectangle.top < 0:
+            self.rectangle.top = 0
+        if self.rectangle.bottom > DISPLAY_HEIGHT:
+            self.rectangle.bottom = DISPLAY_HEIGHT
+
 
 def play():
     screen = pygame.display.set_mode((DISPLAY_WIDTH, DISPLAY_HEIGHT))
     pygame.display.set_caption('Ouroboros')
     clock = pygame.time.Clock()
-    side = 20
-    move_delta = 5
-    green = (0, 255, 128)
-    surface = pygame.Surface((side, side))
-    surface.fill(green)
-    rectangle = surface.get_rect()
+    snake = Snake()
     while True:
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -32,16 +57,9 @@ def play():
                 if event.key == K_ESCAPE:
                     return
         pressed = pygame.key.get_pressed()
-        if pressed[K_UP]:
-            rectangle.move_ip(0, -move_delta)
-        if pressed[K_DOWN]:
-            rectangle.move_ip(0, move_delta)
-        if pressed[K_LEFT]:
-            rectangle.move_ip(-move_delta, 0)
-        if pressed[K_RIGHT]:
-            rectangle.move_ip(move_delta, 0)
+        snake.move(pressed)
         screen.fill((0, 0, 0))
-        screen.blit(surface, rectangle)
+        screen.blit(snake.surface, snake.rectangle)
         pygame.display.flip()
         clock.tick(60)
 
