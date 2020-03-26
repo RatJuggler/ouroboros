@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import pygame
 import random
 
@@ -23,24 +25,29 @@ CELL_HEIGHT = int(DISPLAY_HEIGHT / CELL_SIZE)
 BACKGROUND_COLOUR = (64, 64, 64)
 GRID_COLOUR = (128, 128, 128)
 
+MOVE_UP = 'up'
+MOVE_DOWN = 'down'
+MOVE_LEFT = 'left'
+MOVE_RIGHT = 'right'
+
 
 class Snake:
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.surface = pygame.Surface((CELL_SIZE, CELL_SIZE))
         self.surface.fill((0, 255, 128))
         self.rectangle = self.surface.get_rect(
             topleft=((CELL_WIDTH - 1) // 2 * CELL_SIZE, (CELL_HEIGHT - 1) // 2 * CELL_SIZE)
         )
 
-    def move(self, pressed):
-        if pressed[K_UP]:
+    def move(self, direction: str) -> None:
+        if direction == MOVE_UP:
             self.rectangle.move_ip(0, -CELL_SIZE)
-        if pressed[K_DOWN]:
+        if direction == MOVE_DOWN:
             self.rectangle.move_ip(0, CELL_SIZE)
-        if pressed[K_LEFT]:
+        if direction == MOVE_LEFT:
             self.rectangle.move_ip(-CELL_SIZE, 0)
-        if pressed[K_RIGHT]:
+        if direction == MOVE_RIGHT:
             self.rectangle.move_ip(CELL_SIZE, 0)
         if self.rectangle.left < 0:
             self.rectangle.left = 0
@@ -54,7 +61,7 @@ class Snake:
 
 class Food:
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.surface = pygame.Surface((CELL_SIZE, CELL_SIZE))
         self.surface.fill((255, 32, 0))
         self.rectangle = self.surface.get_rect(
@@ -62,12 +69,33 @@ class Food:
         )
 
 
-def play():
+def decode_input(direction: str, pressed: Tuple[int]) -> str:
+    if pressed[K_UP]:
+        direction = MOVE_UP
+    if pressed[K_DOWN]:
+        direction = MOVE_DOWN
+    if pressed[K_LEFT]:
+        direction = MOVE_LEFT
+    if pressed[K_RIGHT]:
+        direction = MOVE_RIGHT
+    return direction
+
+
+def draw_background(screen: pygame.Surface) -> None:
+    screen.fill(BACKGROUND_COLOUR)
+    for grid_row in range(CELL_HEIGHT):
+        pygame.draw.line(screen, GRID_COLOUR, (0, grid_row * CELL_SIZE), (DISPLAY_WIDTH, grid_row * CELL_SIZE))
+    for grid_column in range(CELL_WIDTH):
+        pygame.draw.line(screen, GRID_COLOUR, (grid_column * CELL_SIZE, 0), (grid_column * CELL_SIZE, DISPLAY_HEIGHT))
+
+
+def play() -> None:
     screen = pygame.display.set_mode((DISPLAY_WIDTH, DISPLAY_HEIGHT))
     pygame.display.set_caption('Ouroboros')
     clock = pygame.time.Clock()
     snake = Snake()
     food = Food()
+    direction = MOVE_RIGHT
     while True:
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -75,15 +103,11 @@ def play():
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     return
-        pressed = pygame.key.get_pressed()
-        snake.move(pressed)
+        direction = decode_input(direction, pygame.key.get_pressed())
+        snake.move(direction)
         if snake.rectangle.topleft == food.rectangle.topleft:
             food = Food()
-        screen.fill(BACKGROUND_COLOUR)
-        for grid_row in range(CELL_HEIGHT):
-            pygame.draw.line(screen, GRID_COLOUR, (0, grid_row * CELL_SIZE), (DISPLAY_WIDTH, grid_row * CELL_SIZE))
-        for grid_column in range(CELL_WIDTH):
-            pygame.draw.line(screen, GRID_COLOUR, (grid_column * CELL_SIZE, 0), (grid_column * CELL_SIZE, DISPLAY_HEIGHT))
+        draw_background(screen)
         screen.blit(snake.surface, snake.rectangle)
         screen.blit(food.surface, food.rectangle)
         pygame.display.flip()
