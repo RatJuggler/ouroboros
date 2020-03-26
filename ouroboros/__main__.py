@@ -13,27 +13,32 @@ from pygame.locals import (
 DISPLAY_WIDTH = 800
 DISPLAY_HEIGHT = 600
 
-BLOCK_SIZE = 20
-MOVE_DELTA = 20
+CELL_SIZE = 20
+assert DISPLAY_WIDTH % CELL_SIZE == 0, "Display width must be a multiple of the cell size."
+assert DISPLAY_HEIGHT % CELL_SIZE == 0, "Display height must be a multiple of the cell size."
+CELL_WIDTH = int(DISPLAY_WIDTH / CELL_SIZE)
+CELL_HEIGHT = int(DISPLAY_HEIGHT / CELL_SIZE)
+
+BACKGROUND_COLOUR = (64, 64, 64)
+GRID_COLOUR = (128, 128, 128)
 
 
 class Snake:
 
     def __init__(self):
-        self.surface = pygame.Surface((BLOCK_SIZE, BLOCK_SIZE))
-        green = (0, 255, 128)
-        self.surface.fill(green)
+        self.surface = pygame.Surface((CELL_SIZE, CELL_SIZE))
+        self.surface.fill((0, 255, 128))
         self.rectangle = self.surface.get_rect()
 
     def move(self, pressed):
         if pressed[K_UP]:
-            self.rectangle.move_ip(0, -MOVE_DELTA)
+            self.rectangle.move_ip(0, -CELL_SIZE)
         if pressed[K_DOWN]:
-            self.rectangle.move_ip(0, MOVE_DELTA)
+            self.rectangle.move_ip(0, CELL_SIZE)
         if pressed[K_LEFT]:
-            self.rectangle.move_ip(-MOVE_DELTA, 0)
+            self.rectangle.move_ip(-CELL_SIZE, 0)
         if pressed[K_RIGHT]:
-            self.rectangle.move_ip(MOVE_DELTA, 0)
+            self.rectangle.move_ip(CELL_SIZE, 0)
         if self.rectangle.left < 0:
             self.rectangle.left = 0
         if self.rectangle.right > DISPLAY_WIDTH:
@@ -58,7 +63,11 @@ def play():
                     return
         pressed = pygame.key.get_pressed()
         snake.move(pressed)
-        screen.fill((0, 0, 0))
+        screen.fill(BACKGROUND_COLOUR)
+        for grid_row in range(CELL_HEIGHT):
+            pygame.draw.line(screen, GRID_COLOUR, (0, grid_row * CELL_SIZE), (DISPLAY_WIDTH, grid_row * CELL_SIZE))
+        for grid_column in range(CELL_WIDTH):
+            pygame.draw.line(screen, GRID_COLOUR, (grid_column * CELL_SIZE, 0), (grid_column * CELL_SIZE, DISPLAY_HEIGHT))
         screen.blit(snake.surface, snake.rectangle)
         pygame.display.flip()
         clock.tick(60)
