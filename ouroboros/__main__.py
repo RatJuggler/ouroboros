@@ -19,8 +19,8 @@ DISPLAY_HEIGHT = 600
 CELL_SIZE = 20
 assert DISPLAY_WIDTH % CELL_SIZE == 0, "Display width must be a multiple of the cell size."
 assert DISPLAY_HEIGHT % CELL_SIZE == 0, "Display height must be a multiple of the cell size."
-CELL_WIDTH = int(DISPLAY_WIDTH / CELL_SIZE)
-CELL_HEIGHT = int(DISPLAY_HEIGHT / CELL_SIZE)
+CELL_WIDTH = DISPLAY_WIDTH // CELL_SIZE
+CELL_HEIGHT = DISPLAY_HEIGHT // CELL_SIZE
 
 BACKGROUND_COLOUR = (64, 64, 64)
 GRID_COLOUR = (128, 128, 128)
@@ -31,9 +31,10 @@ MOVE_LEFT = 'left'
 MOVE_RIGHT = 'right'
 
 
-class Snake:
+class Snake(pygame.sprite.Sprite):
 
     def __init__(self) -> None:
+        super(Snake, self).__init__()
         self.surface = pygame.Surface((CELL_SIZE, CELL_SIZE))
         self.surface.fill((0, 255, 128))
         self.rectangle = self.surface.get_rect(
@@ -59,9 +60,10 @@ class Snake:
             self.rectangle.bottom = DISPLAY_HEIGHT
 
 
-class Food:
+class Food(pygame.sprite.Sprite):
 
     def __init__(self) -> None:
+        super(Food, self).__init__()
         self.surface = pygame.Surface((CELL_SIZE, CELL_SIZE))
         self.surface.fill((255, 32, 0))
         self.rectangle = self.surface.get_rect(
