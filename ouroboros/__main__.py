@@ -19,9 +19,11 @@ def play():
     pygame.display.set_caption('Ouroboros')
     clock = pygame.time.Clock()
     side = 20
-    x = (DISPLAY_WIDTH - side) / 2
-    y = (DISPLAY_HEIGHT - side) / 2
+    move_delta = 5
     green = (0, 255, 128)
+    surface = pygame.Surface((side, side))
+    surface.fill(green)
+    rectangle = surface.get_rect()
     while True:
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -30,14 +32,19 @@ def play():
                 if event.key == K_ESCAPE:
                     return
         pressed = pygame.key.get_pressed()
-        if pressed[K_UP]: y -= 3
-        if pressed[K_DOWN]: y += 3
-        if pressed[K_LEFT]: x -= 3
-        if pressed[K_RIGHT]: x += 3
+        if pressed[K_UP]:
+            rectangle.move_ip(0, -move_delta)
+        if pressed[K_DOWN]:
+            rectangle.move_ip(0, move_delta)
+        if pressed[K_LEFT]:
+            rectangle.move_ip(-move_delta, 0)
+        if pressed[K_RIGHT]:
+            rectangle.move_ip(move_delta, 0)
         screen.fill((0, 0, 0))
-        pygame.draw.rect(screen, green, pygame.Rect(x, y, side, side))
+        screen.blit(surface, rectangle)
         pygame.display.flip()
         clock.tick(60)
+
 
 if __name__ == '__main__':
     pygame.init()
