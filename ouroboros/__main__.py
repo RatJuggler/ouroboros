@@ -1,4 +1,5 @@
 import pygame
+import random
 
 from pygame.locals import (
     K_UP,
@@ -28,7 +29,9 @@ class Snake:
     def __init__(self):
         self.surface = pygame.Surface((CELL_SIZE, CELL_SIZE))
         self.surface.fill((0, 255, 128))
-        self.rectangle = self.surface.get_rect()
+        self.rectangle = self.surface.get_rect(
+            topleft=((CELL_WIDTH - 1) // 2 * CELL_SIZE, (CELL_HEIGHT - 1) // 2 * CELL_SIZE)
+        )
 
     def move(self, pressed):
         if pressed[K_UP]:
@@ -49,11 +52,22 @@ class Snake:
             self.rectangle.bottom = DISPLAY_HEIGHT
 
 
+class Food:
+
+    def __init__(self):
+        self.surface = pygame.Surface((CELL_SIZE, CELL_SIZE))
+        self.surface.fill((255, 32, 0))
+        self.rectangle = self.surface.get_rect(
+            topleft=(random.randint(0, CELL_WIDTH - 1) * CELL_SIZE, random.randint(0, CELL_HEIGHT - 1) * CELL_SIZE)
+        )
+
+
 def play():
     screen = pygame.display.set_mode((DISPLAY_WIDTH, DISPLAY_HEIGHT))
     pygame.display.set_caption('Ouroboros')
     clock = pygame.time.Clock()
     snake = Snake()
+    food = Food()
     while True:
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -69,6 +83,7 @@ def play():
         for grid_column in range(CELL_WIDTH):
             pygame.draw.line(screen, GRID_COLOUR, (grid_column * CELL_SIZE, 0), (grid_column * CELL_SIZE, DISPLAY_HEIGHT))
         screen.blit(snake.surface, snake.rectangle)
+        screen.blit(food.surface, food.rectangle)
         pygame.display.flip()
         clock.tick(60)
 
