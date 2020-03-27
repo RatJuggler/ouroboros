@@ -33,12 +33,13 @@ MOVE_RIGHT = 'right'
 
 class Segment(pygame.sprite.Sprite):
 
-    def __init__(self, offset: int) -> None:
+    def __init__(self, screen: pygame.Surface, offset: int) -> None:
         super(Segment, self).__init__()
+        self.screen = screen
         self.surface = pygame.Surface((CELL_SIZE, CELL_SIZE))
         self.surface.fill((0, 255, 128))
         self.rectangle = self.surface.get_rect(
-            topleft=((CELL_WIDTH - offset) // 2 * CELL_SIZE, (CELL_HEIGHT - offset) // 2 * CELL_SIZE)
+            topleft=((CELL_WIDTH - offset) // 2 * CELL_SIZE, (CELL_HEIGHT - 1) // 2 * CELL_SIZE)
         )
 
     def move(self, direction: str) -> None:
@@ -59,22 +60,30 @@ class Segment(pygame.sprite.Sprite):
         if self.rectangle.bottom > DISPLAY_HEIGHT:
             self.rectangle.bottom = DISPLAY_HEIGHT
 
+    def render(self) -> None:
+        self.screen.blit(self.surface, self.rectangle)
+
 
 class Snake(pygame.sprite.Sprite):
 
     def __init__(self, screen: pygame.Surface) -> None:
         super(Snake, self).__init__()
         self.screen = screen
-        self.segments = Segment(1)
+        self.segments = pygame.sprite.OrderedUpdates()
+        self.head = Segment(self.screen, 1)
+        self.segments.add(self.head)
+        self.segments.add(Segment(self.screen, 2))
+        self.segments.add(Segment(self.screen, 3))
 
     def move(self, direction: str) -> None:
-        self.segments.move(direction)
+        self.head.move(direction)
 
     def render(self) -> None:
-        self.screen.blit(self.segments.surface, self.segments.rectangle)
+        for segment in self.segments:
+            segment.render()
 
     def found(self, food) -> bool:
-        return self.segments.rectangle.topleft == food.rectangle.topleft
+        return self.head.rectangle.topleft == food.rectangle.topleft
 
 
 class Food(pygame.sprite.Sprite):
