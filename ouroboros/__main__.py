@@ -53,8 +53,12 @@ class Head(Segment):
 
     def __init__(self, screen: pygame.Surface, at_x: int, at_y: int) -> None:
         super(Head, self).__init__(screen, at_x, at_y)
+        self.prev_x = at_x
+        self.prev_y = at_y
 
-    def move(self, direction: str) -> None:
+    def point(self, direction: str) -> None:
+        self.prev_x = self.rectangle.x
+        self.prev_y = self.rectangle.y
         if direction == MOVE_UP:
             self.slide(0, -CELL_SIZE)
         if direction == MOVE_DOWN:
@@ -82,19 +86,24 @@ class Snake(pygame.sprite.Sprite):
         new_snake_y = CELL_HEIGHT // 2
         self._head = Head(self._screen, new_snake_x, new_snake_y)
         self._body = pygame.sprite.OrderedUpdates()
-        self._body.add(Segment(self._screen, new_snake_x - 1, new_snake_y))
         self._body.add(Segment(self._screen, new_snake_x - 2, new_snake_y))
+        self._body.add(Segment(self._screen, new_snake_x - 1, new_snake_y))
 
-    def move(self, direction: str) -> None:
-        new_x = self._head.rectangle.x
-        new_y = self._head.rectangle.y
-        self._head.move(direction)
+    def point(self, direction: str) -> None:
+        self._head.point(direction)
+
+    def move(self) -> None:
+        new_x = self._head.prev_x
+        new_y = self._head.prev_y
         for segment in self._body:
             old_x = segment.rectangle.x
             old_y = segment.rectangle.y
             segment.slide(new_x - old_x, new_y - old_y)
             new_x = old_x
             new_y = old_y
+
+    def grow(self) -> None:
+        self._body.add(Segment(self._screen, self._head.prev_x, self._head.prev_y))
 
     def render(self) -> None:
         self._head.render()
@@ -162,10 +171,12 @@ def play() -> None:
                 if event.key == K_ESCAPE:
                     return
         direction = decode_input(direction, pygame.key.get_pressed())
-        snake.move(direction)
+        snake.point(direction)
         if snake.found(food):
             score += 1
+            snake.grow()
             food = Food(screen)
+        snake.move()
         draw_background(screen)
         display_score(screen, score)
         snake.render()
