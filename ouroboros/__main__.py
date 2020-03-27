@@ -31,14 +31,14 @@ MOVE_LEFT = 'left'
 MOVE_RIGHT = 'right'
 
 
-class Snake(pygame.sprite.Sprite):
+class Segment(pygame.sprite.Sprite):
 
-    def __init__(self) -> None:
-        super(Snake, self).__init__()
+    def __init__(self, offset: int) -> None:
+        super(Segment, self).__init__()
         self.surface = pygame.Surface((CELL_SIZE, CELL_SIZE))
         self.surface.fill((0, 255, 128))
         self.rectangle = self.surface.get_rect(
-            topleft=((CELL_WIDTH - 1) // 2 * CELL_SIZE, (CELL_HEIGHT - 1) // 2 * CELL_SIZE)
+            topleft=((CELL_WIDTH - offset) // 2 * CELL_SIZE, (CELL_HEIGHT - offset) // 2 * CELL_SIZE)
         )
 
     def move(self, direction: str) -> None:
@@ -60,15 +60,36 @@ class Snake(pygame.sprite.Sprite):
             self.rectangle.bottom = DISPLAY_HEIGHT
 
 
+class Snake(pygame.sprite.Sprite):
+
+    def __init__(self, screen: pygame.Surface) -> None:
+        super(Snake, self).__init__()
+        self.screen = screen
+        self.segments = Segment(1)
+
+    def move(self, direction: str) -> None:
+        self.segments.move(direction)
+
+    def render(self) -> None:
+        self.screen.blit(self.segments.surface, self.segments.rectangle)
+
+    def found(self, food) -> bool:
+        return self.segments.rectangle.topleft == food.rectangle.topleft
+
+
 class Food(pygame.sprite.Sprite):
 
-    def __init__(self) -> None:
+    def __init__(self, screen: pygame.Surface) -> None:
         super(Food, self).__init__()
+        self.screen = screen
         self.surface = pygame.Surface((CELL_SIZE, CELL_SIZE))
         self.surface.fill((255, 32, 0))
         self.rectangle = self.surface.get_rect(
             topleft=(random.randint(0, CELL_WIDTH - 1) * CELL_SIZE, random.randint(1, CELL_HEIGHT - 1) * CELL_SIZE)
         )
+
+    def render(self) -> None:
+        self.screen.blit(self.surface, self.rectangle)
 
 
 def decode_input(direction: str, pressed: Tuple[int]) -> str:
@@ -101,8 +122,8 @@ def play() -> None:
     screen = pygame.display.set_mode((DISPLAY_WIDTH, DISPLAY_HEIGHT))
     pygame.display.set_caption('Ouroboros')
     clock = pygame.time.Clock()
-    snake = Snake()
-    food = Food()
+    snake = Snake(screen)
+    food = Food(screen)
     direction = MOVE_RIGHT
     score = 0
     while True:
@@ -114,13 +135,13 @@ def play() -> None:
                     return
         direction = decode_input(direction, pygame.key.get_pressed())
         snake.move(direction)
-        if snake.rectangle.topleft == food.rectangle.topleft:
+        if snake.found(food):
             score += 1
-            food = Food()
+            food = Food(screen)
         draw_background(screen)
         display_score(screen, score)
-        screen.blit(snake.surface, snake.rectangle)
-        screen.blit(food.surface, food.rectangle)
+        snake.render()
+        food.render()
         pygame.display.flip()
         clock.tick(15)
 
