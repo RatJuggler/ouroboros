@@ -61,12 +61,6 @@ class Cell(pygame.sprite.Sprite):
             self.rect.top >= CELL_SIZE and self.rect.bottom <= DISPLAY_HEIGHT
 
 
-class Body(Cell):
-
-    def __init__(self, screen: pygame.Surface, at_cell_x: int, at_cell_y: int) -> None:
-        super(Body, self).__init__(screen, at_cell_x, at_cell_y, (0, 255, 0))
-
-
 class Head(Cell):
 
     def __init__(self, screen: pygame.Surface, at_x: int, at_y: int) -> None:
@@ -84,6 +78,18 @@ class Head(Cell):
         return self.valid_position()
 
 
+class Body(Cell):
+
+    def __init__(self, screen: pygame.Surface, at_cell_x: int, at_cell_y: int) -> None:
+        super(Body, self).__init__(screen, at_cell_x, at_cell_y, (0, 255, 0))
+
+
+class Tail(Cell):
+
+    def __init__(self, screen: pygame.Surface, at_cell_x: int, at_cell_y: int) -> None:
+        super(Tail, self).__init__(screen, at_cell_x, at_cell_y, (96, 128, 96))
+
+
 class Snake(pygame.sprite.Sprite):
 
     def __init__(self, screen: pygame.Surface) -> None:
@@ -93,8 +99,8 @@ class Snake(pygame.sprite.Sprite):
         new_snake_y = CELL_ROWS // 2
         self._head = Head(self._screen, new_snake_x, new_snake_y)
         self._body = pygame.sprite.OrderedUpdates()
-        self._body.add(Body(self._screen, new_snake_x - 2, new_snake_y))
         self._body.add(Body(self._screen, new_snake_x - 1, new_snake_y))
+        self._body.add(Tail(self._screen, new_snake_x - 2, new_snake_y))
 
     def move_head(self, direction: str) -> bool:
         return self._head.move_to(direction) and pygame.sprite.spritecollideany(self._head, self._body) is None
