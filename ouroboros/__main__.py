@@ -42,15 +42,27 @@ class Segment(pygame.sprite.Sprite):
             topleft=((CELL_WIDTH - offset) // 2 * CELL_SIZE, (CELL_HEIGHT - 1) // 2 * CELL_SIZE)
         )
 
+    def slide(self, delta_x: int, delta_y: int) -> None:
+        self.rectangle.move_ip(delta_x, delta_y)
+
+    def render(self) -> None:
+        self.screen.blit(self.surface, self.rectangle)
+
+
+class Head(Segment):
+
+    def __init__(self, screen: pygame.Surface, offset: int) -> None:
+        super(Head, self).__init__(screen, offset)
+
     def move(self, direction: str) -> None:
         if direction == MOVE_UP:
-            self.rectangle.move_ip(0, -CELL_SIZE)
+            self.slide(0, -CELL_SIZE)
         if direction == MOVE_DOWN:
-            self.rectangle.move_ip(0, CELL_SIZE)
+            self.slide(0, CELL_SIZE)
         if direction == MOVE_LEFT:
-            self.rectangle.move_ip(-CELL_SIZE, 0)
+            self.slide(-CELL_SIZE, 0)
         if direction == MOVE_RIGHT:
-            self.rectangle.move_ip(CELL_SIZE, 0)
+            self.slide(CELL_SIZE, 0)
         if self.rectangle.left < 0:
             self.rectangle.left = 0
         if self.rectangle.right > DISPLAY_WIDTH:
@@ -60,12 +72,6 @@ class Segment(pygame.sprite.Sprite):
         if self.rectangle.bottom > DISPLAY_HEIGHT:
             self.rectangle.bottom = DISPLAY_HEIGHT
 
-    def slide(self, delta_x: int, delta_y: int) -> None:
-        self.rectangle.move_ip(delta_x, delta_y)
-
-    def render(self) -> None:
-        self.screen.blit(self.surface, self.rectangle)
-
 
 class Snake(pygame.sprite.Sprite):
 
@@ -73,7 +79,7 @@ class Snake(pygame.sprite.Sprite):
         super(Snake, self).__init__()
         self.screen = screen
         self.segments = pygame.sprite.OrderedUpdates()
-        self.head = Segment(self.screen, 1)
+        self.head = Head(self.screen, 1)
         self.segments.add(self.head)
         self.segments.add(Segment(self.screen, 2))
         self.segments.add(Segment(self.screen, 3))
