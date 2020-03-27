@@ -19,8 +19,8 @@ DISPLAY_HEIGHT = 600
 CELL_SIZE = 20
 assert DISPLAY_WIDTH % CELL_SIZE == 0, "Display width must be a multiple of the cell size."
 assert DISPLAY_HEIGHT % CELL_SIZE == 0, "Display height must be a multiple of the cell size."
-CELL_WIDTH = DISPLAY_WIDTH // CELL_SIZE
-CELL_HEIGHT = DISPLAY_HEIGHT // CELL_SIZE
+CELL_COLUMNS = DISPLAY_WIDTH // CELL_SIZE
+CELL_ROWS = DISPLAY_HEIGHT // CELL_SIZE
 
 BACKGROUND_COLOUR = (64, 64, 64)
 GRID_COLOUR = (128, 128, 128)
@@ -31,44 +31,102 @@ MOVE_LEFT = 'left'
 MOVE_RIGHT = 'right'
 
 
+class Cell(pygame.sprite.Sprite):
+
+    def __init__(self, screen: pygame.Surface, at_cell_x: int, at_cell_y: int, colour: Tuple[int, int, int]) -> None:
+        super(Cell, self).__init__()
+        self._screen = screen
+        self._surface = pygame.Surface((CELL_SIZE, CELL_SIZE))
+        self._surface.fill(colour)
+        # Must be named 'rect' for use by collision detection API.
+        self.rect = self._surface.get_rect(
+            topleft=(at_cell_x * CELL_SIZE, at_cell_y * CELL_SIZE)
+        )
+        self.prev_x = self.rect.x
+        self.prev_y = self.rect.y
+
+    def render(self) -> None:
+        self._screen.blit(self._surface, self.rect)
+
+    def move(self, delta_x: int, delta_y: int) -> None:
+        self.prev_x = self.rect.x
+        self.prev_y = self.rect.y
+        self.rect.move_ip(delta_x, delta_y)
+
+    def slide(self, prev_cell) -> None:
+        self.move(prev_cell.prev_x - self.rect.x, prev_cell.prev_y - self.rect.y)
+
+    def valid_position(self) -> bool:
+        return self.rect.left >= 0 and self.rect.right <= DISPLAY_WIDTH and \
+            self.rect.top >= CELL_SIZE and self.rect.bottom <= DISPLAY_HEIGHT
+
+
+class Head(Cell):
+
+    def __init__(self, screen: pygame.Surface, at_x: int, at_y: int) -> None:
+        super(Head, self).__init__(screen, at_x, at_y, (64, 128, 64))
+
+    def move_to(self, direction: str) -> bool:
+        if direction == MOVE_UP:
+            self.move(0, -CELL_SIZE)
+        elif direction == MOVE_DOWN:
+            self.move(0, CELL_SIZE)
+        elif direction == MOVE_LEFT:
+            self.move(-CELL_SIZE, 0)
+        elif direction == MOVE_RIGHT:
+            self.move(CELL_SIZE, 0)
+        return self.valid_position()
+
+
+class Body(Cell):
+
+    def __init__(self, screen: pygame.Surface, at_cell_x: int, at_cell_y: int) -> None:
+        super(Body, self).__init__(screen, at_cell_x, at_cell_y, (0, 255, 0))
+
+
+class Tail(Cell):
+
+    def __init__(self, screen: pygame.Surface, at_cell_x: int, at_cell_y: int) -> None:
+        super(Tail, self).__init__(screen, at_cell_x, at_cell_y, (96, 128, 96))
+
+
 class Snake(pygame.sprite.Sprite):
 
-    def __init__(self) -> None:
+    def __init__(self, screen: pygame.Surface) -> None:
         super(Snake, self).__init__()
-        self.surface = pygame.Surface((CELL_SIZE, CELL_SIZE))
-        self.surface.fill((0, 255, 128))
-        self.rectangle = self.surface.get_rect(
-            topleft=((CELL_WIDTH - 1) // 2 * CELL_SIZE, (CELL_HEIGHT - 1) // 2 * CELL_SIZE)
-        )
+        self._screen = screen
+        new_snake_x = (CELL_COLUMNS - 1) // 2
+        new_snake_y = CELL_ROWS // 2
+        self._head = Head(self._screen, new_snake_x, new_snake_y)
+        self._body = pygame.sprite.OrderedUpdates()
+        self._body.add(Body(self._screen, new_snake_x - 1, new_snake_y))
+        self._body.add(Tail(self._screen, new_snake_x - 2, new_snake_y))
 
-    def move(self, direction: str) -> None:
-        if direction == MOVE_UP:
-            self.rectangle.move_ip(0, -CELL_SIZE)
-        if direction == MOVE_DOWN:
-            self.rectangle.move_ip(0, CELL_SIZE)
-        if direction == MOVE_LEFT:
-            self.rectangle.move_ip(-CELL_SIZE, 0)
-        if direction == MOVE_RIGHT:
-            self.rectangle.move_ip(CELL_SIZE, 0)
-        if self.rectangle.left < 0:
-            self.rectangle.left = 0
-        if self.rectangle.right > DISPLAY_WIDTH:
-            self.rectangle.right = DISPLAY_WIDTH
-        if self.rectangle.top < CELL_SIZE:
-            self.rectangle.top = CELL_SIZE
-        if self.rectangle.bottom > DISPLAY_HEIGHT:
-            self.rectangle.bottom = DISPLAY_HEIGHT
+    def move_head(self, direction: str) -> bool:
+        return self._head.move_to(direction) and pygame.sprite.spritecollideany(self._head, self._body) is None
+
+    def move_body(self) -> None:
+        prev_segment = self._head
+        for segment in self._body:
+            segment.slide(prev_segment)
+            prev_segment = segment
+
+    def grow(self) -> None:
+        self._body.add(Body(self._screen, self._head.prev_x, self._head.prev_y))
+
+    def render(self) -> None:
+        self._head.render()
+        for segment in self._body:
+            segment.render()
+
+    def found(self, food) -> bool:
+        return pygame.sprite.collide_rect(self._head, food)
 
 
-class Food(pygame.sprite.Sprite):
+class Food(Cell):
 
-    def __init__(self) -> None:
-        super(Food, self).__init__()
-        self.surface = pygame.Surface((CELL_SIZE, CELL_SIZE))
-        self.surface.fill((255, 32, 0))
-        self.rectangle = self.surface.get_rect(
-            topleft=(random.randint(0, CELL_WIDTH - 1) * CELL_SIZE, random.randint(1, CELL_HEIGHT - 1) * CELL_SIZE)
-        )
+    def __init__(self, screen: pygame.Surface) -> None:
+        super(Food, self).__init__(screen, random.randint(0, CELL_COLUMNS - 1), random.randint(1, CELL_ROWS - 1), (255, 32, 0))
 
 
 def decode_input(direction: str, pressed: Tuple[int]) -> str:
@@ -85,24 +143,24 @@ def decode_input(direction: str, pressed: Tuple[int]) -> str:
 
 def draw_background(screen: pygame.Surface) -> None:
     screen.fill(BACKGROUND_COLOUR)
-    for grid_row in range(0, DISPLAY_HEIGHT, CELL_SIZE):
+    for grid_row in range(CELL_SIZE, DISPLAY_HEIGHT, CELL_SIZE):
         pygame.draw.line(screen, GRID_COLOUR, (0, grid_row), (DISPLAY_WIDTH, grid_row))
     for grid_column in range(0, DISPLAY_WIDTH, CELL_SIZE):
-        pygame.draw.line(screen, GRID_COLOUR, (grid_column, 0), (grid_column, DISPLAY_HEIGHT))
+        pygame.draw.line(screen, GRID_COLOUR, (grid_column, CELL_SIZE), (grid_column, DISPLAY_HEIGHT))
 
 
 def display_score(screen: pygame.Surface, score: int) -> None:
     font = pygame.font.SysFont(None, 24)
     score_img = font.render(str(score), True, (255, 255, 255))
-    screen.blit(score_img, ((CELL_WIDTH - 4) * CELL_SIZE, 2))
+    screen.blit(score_img, ((CELL_COLUMNS - 4) * CELL_SIZE, 2))
 
 
 def play() -> None:
     screen = pygame.display.set_mode((DISPLAY_WIDTH, DISPLAY_HEIGHT))
     pygame.display.set_caption('Ouroboros')
     clock = pygame.time.Clock()
-    snake = Snake()
-    food = Food()
+    snake = Snake(screen)
+    food = Food(screen)
     direction = MOVE_RIGHT
     score = 0
     while True:
@@ -113,14 +171,17 @@ def play() -> None:
                 if event.key == K_ESCAPE:
                     return
         direction = decode_input(direction, pygame.key.get_pressed())
-        snake.move(direction)
-        if snake.rectangle.topleft == food.rectangle.topleft:
+        if not snake.move_head(direction):
+            return
+        if snake.found(food):
             score += 1
-            food = Food()
+            snake.grow()
+            food = Food(screen)
+        snake.move_body()
         draw_background(screen)
         display_score(screen, score)
-        screen.blit(snake.surface, snake.rectangle)
-        screen.blit(food.surface, food.rectangle)
+        snake.render()
+        food.render()
         pygame.display.flip()
         clock.tick(15)
 
