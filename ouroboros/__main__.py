@@ -38,12 +38,12 @@ class Cell(pygame.sprite.Sprite):
         self._screen = screen
         self._surface = pygame.Surface((CELL_SIZE, CELL_SIZE))
         self._surface.fill(colour)
-        self.rectangle = self._surface.get_rect(
+        self.rect = self._surface.get_rect(
             topleft=(at_cell_x * CELL_SIZE, at_cell_y * CELL_SIZE)
         )
 
     def render(self) -> None:
-        self._screen.blit(self._surface, self.rectangle)
+        self._screen.blit(self._surface, self.rect)
 
 
 class Segment(Cell):
@@ -52,7 +52,7 @@ class Segment(Cell):
         super(Segment, self).__init__(screen, at_cell_x, at_cell_y, (0, 255, 128))
 
     def slide(self, delta_x: int, delta_y: int) -> None:
-        self.rectangle.move_ip(delta_x, delta_y)
+        self.rect.move_ip(delta_x, delta_y)
 
 
 class Head(Segment):
@@ -62,9 +62,9 @@ class Head(Segment):
         self.prev_x = at_x
         self.prev_y = at_y
 
-    def point(self, direction: str) -> None:
-        self.prev_x = self.rectangle.x
-        self.prev_y = self.rectangle.y
+    def move_to(self, direction: str) -> bool:
+        self.prev_x = self.rect.x
+        self.prev_y = self.rect.y
         if direction == MOVE_UP:
             self.slide(0, -CELL_SIZE)
         if direction == MOVE_DOWN:
@@ -73,14 +73,8 @@ class Head(Segment):
             self.slide(-CELL_SIZE, 0)
         if direction == MOVE_RIGHT:
             self.slide(CELL_SIZE, 0)
-        if self.rectangle.left < 0:
-            self.rectangle.left = 0
-        if self.rectangle.right > DISPLAY_WIDTH:
-            self.rectangle.right = DISPLAY_WIDTH
-        if self.rectangle.top < CELL_SIZE:
-            self.rectangle.top = CELL_SIZE
-        if self.rectangle.bottom > DISPLAY_HEIGHT:
-            self.rectangle.bottom = DISPLAY_HEIGHT
+        return self.rect.left >= 0 and self.rect.right <= DISPLAY_WIDTH and \
+            self.rect.top >= CELL_SIZE and self.rect.bottom <= DISPLAY_HEIGHT
 
 
 class Snake(pygame.sprite.Sprite):
@@ -95,15 +89,15 @@ class Snake(pygame.sprite.Sprite):
         self._body.add(Segment(self._screen, new_snake_x - 2, new_snake_y))
         self._body.add(Segment(self._screen, new_snake_x - 1, new_snake_y))
 
-    def point(self, direction: str) -> None:
-        self._head.point(direction)
+    def move_to(self, direction: str) -> bool:
+        return self._head.move_to(direction)
 
     def move(self) -> None:
         new_x = self._head.prev_x
         new_y = self._head.prev_y
         for segment in self._body:
-            old_x = segment.rectangle.x
-            old_y = segment.rectangle.y
+            old_x = segment.rect.x
+            old_y = segment.rect.y
             segment.slide(new_x - old_x, new_y - old_y)
             new_x = old_x
             new_y = old_y
@@ -117,7 +111,7 @@ class Snake(pygame.sprite.Sprite):
             segment.render()
 
     def found(self, food) -> bool:
-        return self._head.rectangle.topleft == food.rectangle.topleft
+        return pygame.sprite.collide_rect(self._head, food)
 
 
 class Food(Cell):
@@ -168,7 +162,8 @@ def play() -> None:
                 if event.key == K_ESCAPE:
                     return
         direction = decode_input(direction, pygame.key.get_pressed())
-        snake.point(direction)
+        if not snake.move_to(direction):
+            return
         if snake.found(food):
             score += 1
             snake.grow()
