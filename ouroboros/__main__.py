@@ -35,10 +35,10 @@ class Segment(pygame.sprite.Sprite):
 
     def __init__(self, screen: pygame.Surface, offset: int) -> None:
         super(Segment, self).__init__()
-        self.screen = screen
-        self.surface = pygame.Surface((CELL_SIZE, CELL_SIZE))
-        self.surface.fill((0, 255, 128))
-        self.rectangle = self.surface.get_rect(
+        self._screen = screen
+        self._surface = pygame.Surface((CELL_SIZE, CELL_SIZE))
+        self._surface.fill((0, 255, 128))
+        self.rectangle = self._surface.get_rect(
             topleft=((CELL_WIDTH - offset) // 2 * CELL_SIZE, (CELL_HEIGHT - 1) // 2 * CELL_SIZE)
         )
 
@@ -46,7 +46,7 @@ class Segment(pygame.sprite.Sprite):
         self.rectangle.move_ip(delta_x, delta_y)
 
     def render(self) -> None:
-        self.screen.blit(self.surface, self.rectangle)
+        self._screen.blit(self._surface, self.rectangle)
 
 
 class Head(Segment):
@@ -77,19 +77,19 @@ class Snake(pygame.sprite.Sprite):
 
     def __init__(self, screen: pygame.Surface) -> None:
         super(Snake, self).__init__()
-        self.screen = screen
-        self.segments = pygame.sprite.OrderedUpdates()
-        self.head = Head(self.screen, 1)
-        self.segments.add(self.head)
-        self.segments.add(Segment(self.screen, 2))
-        self.segments.add(Segment(self.screen, 3))
+        self._screen = screen
+        self._segments = pygame.sprite.OrderedUpdates()
+        self._head = Head(self._screen, 1)
+        self._segments.add(self._head)
+        self._segments.add(Segment(self._screen, 2))
+        self._segments.add(Segment(self._screen, 3))
 
     def move(self, direction: str) -> None:
-        new_x = self.head.rectangle.x
-        new_y = self.head.rectangle.y
-        self.head.move(direction)
-        for segment in self.segments:
-            if segment != self.head:
+        new_x = self._head.rectangle.x
+        new_y = self._head.rectangle.y
+        self._head.move(direction)
+        for segment in self._segments:
+            if segment != self._head:
                 old_x = segment.rectangle.x
                 old_y = segment.rectangle.y
                 segment.slide(new_x - old_x, new_y - old_y)
@@ -97,26 +97,26 @@ class Snake(pygame.sprite.Sprite):
                 new_y = old_y
 
     def render(self) -> None:
-        for segment in self.segments:
+        for segment in self._segments:
             segment.render()
 
     def found(self, food) -> bool:
-        return self.head.rectangle.topleft == food.rectangle.topleft
+        return self._head.rectangle.topleft == food.rectangle.topleft
 
 
 class Food(pygame.sprite.Sprite):
 
     def __init__(self, screen: pygame.Surface) -> None:
         super(Food, self).__init__()
-        self.screen = screen
-        self.surface = pygame.Surface((CELL_SIZE, CELL_SIZE))
-        self.surface.fill((255, 32, 0))
-        self.rectangle = self.surface.get_rect(
+        self._screen = screen
+        self._surface = pygame.Surface((CELL_SIZE, CELL_SIZE))
+        self._surface.fill((255, 32, 0))
+        self.rectangle = self._surface.get_rect(
             topleft=(random.randint(0, CELL_WIDTH - 1) * CELL_SIZE, random.randint(1, CELL_HEIGHT - 1) * CELL_SIZE)
         )
 
     def render(self) -> None:
-        self.screen.blit(self.surface, self.rectangle)
+        self._screen.blit(self._surface, self.rectangle)
 
 
 def decode_input(direction: str, pressed: Tuple[int]) -> str:
