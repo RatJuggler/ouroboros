@@ -33,13 +33,13 @@ MOVE_RIGHT = 'right'
 
 class Segment(pygame.sprite.Sprite):
 
-    def __init__(self, screen: pygame.Surface, offset: int) -> None:
+    def __init__(self, screen: pygame.Surface, at_cell_x: int, at_cell_y: int) -> None:
         super(Segment, self).__init__()
         self._screen = screen
         self._surface = pygame.Surface((CELL_SIZE, CELL_SIZE))
         self._surface.fill((0, 255, 128))
         self.rectangle = self._surface.get_rect(
-            topleft=((CELL_WIDTH - offset) // 2 * CELL_SIZE, (CELL_HEIGHT - 1) // 2 * CELL_SIZE)
+            topleft=(at_cell_x * CELL_SIZE, at_cell_y * CELL_SIZE)
         )
 
     def slide(self, delta_x: int, delta_y: int) -> None:
@@ -51,8 +51,8 @@ class Segment(pygame.sprite.Sprite):
 
 class Head(Segment):
 
-    def __init__(self, screen: pygame.Surface, offset: int) -> None:
-        super(Head, self).__init__(screen, offset)
+    def __init__(self, screen: pygame.Surface, at_x: int, at_y: int) -> None:
+        super(Head, self).__init__(screen, at_x, at_y)
 
     def move(self, direction: str) -> None:
         if direction == MOVE_UP:
@@ -78,26 +78,27 @@ class Snake(pygame.sprite.Sprite):
     def __init__(self, screen: pygame.Surface) -> None:
         super(Snake, self).__init__()
         self._screen = screen
-        self._segments = pygame.sprite.OrderedUpdates()
-        self._head = Head(self._screen, 1)
-        self._segments.add(self._head)
-        self._segments.add(Segment(self._screen, 2))
-        self._segments.add(Segment(self._screen, 3))
+        new_snake_x = (CELL_WIDTH - 1) // 2
+        new_snake_y = CELL_HEIGHT // 2
+        self._head = Head(self._screen, new_snake_x, new_snake_y)
+        self._body = pygame.sprite.OrderedUpdates()
+        self._body.add(Segment(self._screen, new_snake_x - 1, new_snake_y))
+        self._body.add(Segment(self._screen, new_snake_x - 2, new_snake_y))
 
     def move(self, direction: str) -> None:
         new_x = self._head.rectangle.x
         new_y = self._head.rectangle.y
         self._head.move(direction)
-        for segment in self._segments:
-            if segment != self._head:
-                old_x = segment.rectangle.x
-                old_y = segment.rectangle.y
-                segment.slide(new_x - old_x, new_y - old_y)
-                new_x = old_x
-                new_y = old_y
+        for segment in self._body:
+            old_x = segment.rectangle.x
+            old_y = segment.rectangle.y
+            segment.slide(new_x - old_x, new_y - old_y)
+            new_x = old_x
+            new_y = old_y
 
     def render(self) -> None:
-        for segment in self._segments:
+        self._head.render()
+        for segment in self._body:
             segment.render()
 
     def found(self, food) -> bool:
