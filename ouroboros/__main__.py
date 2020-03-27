@@ -134,10 +134,10 @@ def decode_input(direction: str, pressed: Tuple[int]) -> str:
 
 def draw_background(screen: pygame.Surface) -> None:
     screen.fill(BACKGROUND_COLOUR)
-    for grid_row in range(0, DISPLAY_HEIGHT, CELL_SIZE):
+    for grid_row in range(CELL_SIZE, DISPLAY_HEIGHT, CELL_SIZE):
         pygame.draw.line(screen, GRID_COLOUR, (0, grid_row), (DISPLAY_WIDTH, grid_row))
     for grid_column in range(0, DISPLAY_WIDTH, CELL_SIZE):
-        pygame.draw.line(screen, GRID_COLOUR, (grid_column, 0), (grid_column, DISPLAY_HEIGHT))
+        pygame.draw.line(screen, GRID_COLOUR, (grid_column, CELL_SIZE), (grid_column, DISPLAY_HEIGHT))
 
 
 def display_score(screen: pygame.Surface, score: int) -> None:
