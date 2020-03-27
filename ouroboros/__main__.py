@@ -40,7 +40,7 @@ class Cell(pygame.sprite.Sprite):
         self._surface.fill(colour)
         # Must be named 'rect' for use by collision detection API.
         self.rect = self._surface.get_rect(
-            topleft=(at_cell_x * CELL_SIZE, at_cell_y * CELL_SIZE)
+            topleft=(at_cell_x, at_cell_y)
         )
         self.prev_x = self.rect.x
         self.prev_y = self.rect.y
@@ -95,12 +95,12 @@ class Snake(pygame.sprite.Sprite):
     def __init__(self, screen: pygame.Surface) -> None:
         super(Snake, self).__init__()
         self._screen = screen
-        new_snake_x = (CELL_COLUMNS - 1) // 2
-        new_snake_y = CELL_ROWS // 2
+        new_snake_x = ((CELL_COLUMNS - 1) // 2) * CELL_SIZE
+        new_snake_y = (CELL_ROWS // 2) * CELL_SIZE
         self._head = Head(self._screen, new_snake_x, new_snake_y)
         self._body = pygame.sprite.OrderedUpdates()
-        self._body.add(Body(self._screen, new_snake_x - 1, new_snake_y))
-        self._body.add(Tail(self._screen, new_snake_x - 2, new_snake_y))
+        self._body.add(Body(self._screen, new_snake_x - CELL_SIZE, new_snake_y))
+        self._tail = Tail(self._screen, new_snake_x - (2 * CELL_SIZE), new_snake_y)
 
     def move_head(self, direction: str) -> bool:
         return self._head.move_to(direction) and pygame.sprite.spritecollideany(self._head, self._body) is None
@@ -110,6 +110,7 @@ class Snake(pygame.sprite.Sprite):
         for segment in self._body:
             segment.slide(prev_segment)
             prev_segment = segment
+        self._tail.slide(prev_segment)
 
     def grow(self) -> None:
         self._body.add(Body(self._screen, self._head.prev_x, self._head.prev_y))
@@ -118,6 +119,7 @@ class Snake(pygame.sprite.Sprite):
         self._head.render()
         for segment in self._body:
             segment.render()
+        self._tail.render()
 
     def found(self, food) -> bool:
         return pygame.sprite.collide_rect(self._head, food)
@@ -126,7 +128,10 @@ class Snake(pygame.sprite.Sprite):
 class Food(Cell):
 
     def __init__(self, screen: pygame.Surface) -> None:
-        super(Food, self).__init__(screen, random.randint(0, CELL_COLUMNS - 1), random.randint(1, CELL_ROWS - 1), (255, 32, 0))
+        super(Food, self).__init__(screen,
+                                   random.randint(0, CELL_COLUMNS - 1) * CELL_SIZE,
+                                   random.randint(1, CELL_ROWS - 1) * CELL_SIZE,
+                                   (255, 32, 0))
 
 
 def decode_input(direction: str, pressed: Tuple[int]) -> str:
@@ -175,9 +180,11 @@ def play() -> None:
             return
         if snake.found(food):
             score += 1
+            food.kill()
             snake.grow()
             food = Food(screen)
-        snake.move_body()
+        else:
+            snake.move_body()
         draw_background(screen)
         display_score(screen, score)
         snake.render()
