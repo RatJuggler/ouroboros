@@ -90,7 +90,7 @@ class Snake(pygame.sprite.Sprite):
         self._body.add(Segment(self._screen, new_snake_x - 1, new_snake_y))
 
     def move_to(self, direction: str) -> bool:
-        return self._head.move_to(direction)
+        return self._head.move_to(direction) and pygame.sprite.spritecollideany(self._head, self._body) is None
 
     def move(self) -> None:
         new_x = self._head.prev_x
