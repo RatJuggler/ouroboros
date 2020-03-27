@@ -38,7 +38,7 @@ class Cell(pygame.sprite.Sprite):
         self._screen = screen
         self._surface = pygame.Surface((CELL_SIZE, CELL_SIZE))
         self._surface.fill(colour)
-        # Must be named 'rect' for use by collition detection API.
+        # Must be named 'rect' for use by collision detection API.
         self.rect = self._surface.get_rect(
             topleft=(at_cell_x * CELL_SIZE, at_cell_y * CELL_SIZE)
         )
@@ -61,16 +61,16 @@ class Cell(pygame.sprite.Sprite):
             self.rect.top >= CELL_SIZE and self.rect.bottom <= DISPLAY_HEIGHT
 
 
-class Segment(Cell):
+class Body(Cell):
 
     def __init__(self, screen: pygame.Surface, at_cell_x: int, at_cell_y: int) -> None:
-        super(Segment, self).__init__(screen, at_cell_x, at_cell_y, (0, 255, 128))
+        super(Body, self).__init__(screen, at_cell_x, at_cell_y, (0, 255, 0))
 
 
-class Head(Segment):
+class Head(Cell):
 
     def __init__(self, screen: pygame.Surface, at_x: int, at_y: int) -> None:
-        super(Head, self).__init__(screen, at_x, at_y)
+        super(Head, self).__init__(screen, at_x, at_y, (64, 128, 64))
 
     def move_to(self, direction: str) -> bool:
         if direction == MOVE_UP:
@@ -93,8 +93,8 @@ class Snake(pygame.sprite.Sprite):
         new_snake_y = CELL_ROWS // 2
         self._head = Head(self._screen, new_snake_x, new_snake_y)
         self._body = pygame.sprite.OrderedUpdates()
-        self._body.add(Segment(self._screen, new_snake_x - 2, new_snake_y))
-        self._body.add(Segment(self._screen, new_snake_x - 1, new_snake_y))
+        self._body.add(Body(self._screen, new_snake_x - 2, new_snake_y))
+        self._body.add(Body(self._screen, new_snake_x - 1, new_snake_y))
 
     def move_head(self, direction: str) -> bool:
         return self._head.move_to(direction) and pygame.sprite.spritecollideany(self._head, self._body) is None
@@ -106,7 +106,7 @@ class Snake(pygame.sprite.Sprite):
             prev_segment = segment
 
     def grow(self) -> None:
-        self._body.add(Segment(self._screen, self._head.prev_x, self._head.prev_y))
+        self._body.add(Body(self._screen, self._head.prev_x, self._head.prev_y))
 
     def render(self) -> None:
         self._head.render()
