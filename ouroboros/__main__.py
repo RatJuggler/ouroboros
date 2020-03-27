@@ -38,15 +38,23 @@ class Cell(pygame.sprite.Sprite):
         self._screen = screen
         self._surface = pygame.Surface((CELL_SIZE, CELL_SIZE))
         self._surface.fill(colour)
+        # Must be named 'rect' for use by collition detection API.
         self.rect = self._surface.get_rect(
             topleft=(at_cell_x * CELL_SIZE, at_cell_y * CELL_SIZE)
         )
+        self.prev_x = self.rect.x
+        self.prev_y = self.rect.y
 
     def render(self) -> None:
         self._screen.blit(self._surface, self.rect)
 
     def move(self, delta_x: int, delta_y: int) -> None:
+        self.prev_x = self.rect.x
+        self.prev_y = self.rect.y
         self.rect.move_ip(delta_x, delta_y)
+
+    def slide(self, prev_cell) -> None:
+        self.move(prev_cell.prev_x - self.rect.x, prev_cell.prev_y - self.rect.y)
 
     def valid_position(self) -> bool:
         return self.rect.left >= 0 and self.rect.right <= DISPLAY_WIDTH and \
@@ -63,19 +71,15 @@ class Head(Segment):
 
     def __init__(self, screen: pygame.Surface, at_x: int, at_y: int) -> None:
         super(Head, self).__init__(screen, at_x, at_y)
-        self.prev_x = at_x
-        self.prev_y = at_y
 
     def move_to(self, direction: str) -> bool:
-        self.prev_x = self.rect.x
-        self.prev_y = self.rect.y
         if direction == MOVE_UP:
             self.move(0, -CELL_SIZE)
-        if direction == MOVE_DOWN:
+        elif direction == MOVE_DOWN:
             self.move(0, CELL_SIZE)
-        if direction == MOVE_LEFT:
+        elif direction == MOVE_LEFT:
             self.move(-CELL_SIZE, 0)
-        if direction == MOVE_RIGHT:
+        elif direction == MOVE_RIGHT:
             self.move(CELL_SIZE, 0)
         return self.valid_position()
 
@@ -96,14 +100,10 @@ class Snake(pygame.sprite.Sprite):
         return self._head.move_to(direction) and pygame.sprite.spritecollideany(self._head, self._body) is None
 
     def move_body(self) -> None:
-        new_x = self._head.prev_x
-        new_y = self._head.prev_y
+        prev_segment = self._head
         for segment in self._body:
-            old_x = segment.rect.x
-            old_y = segment.rect.y
-            segment.move(new_x - old_x, new_y - old_y)
-            new_x = old_x
-            new_y = old_y
+            segment.slide(prev_segment)
+            prev_segment = segment
 
     def grow(self) -> None:
         self._body.add(Segment(self._screen, self._head.prev_x, self._head.prev_y))
