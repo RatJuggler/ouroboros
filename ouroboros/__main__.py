@@ -19,8 +19,8 @@ DISPLAY_HEIGHT = 600
 CELL_SIZE = 20
 assert DISPLAY_WIDTH % CELL_SIZE == 0, "Display width must be a multiple of the cell size."
 assert DISPLAY_HEIGHT % CELL_SIZE == 0, "Display height must be a multiple of the cell size."
-CELL_WIDTH = DISPLAY_WIDTH // CELL_SIZE
-CELL_HEIGHT = DISPLAY_HEIGHT // CELL_SIZE
+CELL_COLUMNS = DISPLAY_WIDTH // CELL_SIZE
+CELL_ROWS = DISPLAY_HEIGHT // CELL_SIZE
 
 BACKGROUND_COLOUR = (64, 64, 64)
 GRID_COLOUR = (128, 128, 128)
@@ -89,8 +89,8 @@ class Snake(pygame.sprite.Sprite):
     def __init__(self, screen: pygame.Surface) -> None:
         super(Snake, self).__init__()
         self._screen = screen
-        new_snake_x = (CELL_WIDTH - 1) // 2
-        new_snake_y = CELL_HEIGHT // 2
+        new_snake_x = (CELL_COLUMNS - 1) // 2
+        new_snake_y = CELL_ROWS // 2
         self._head = Head(self._screen, new_snake_x, new_snake_y)
         self._body = pygame.sprite.OrderedUpdates()
         self._body.add(Segment(self._screen, new_snake_x - 2, new_snake_y))
@@ -120,7 +120,7 @@ class Snake(pygame.sprite.Sprite):
 class Food(Cell):
 
     def __init__(self, screen: pygame.Surface) -> None:
-        super(Food, self).__init__(screen, random.randint(0, CELL_WIDTH - 1), random.randint(1, CELL_HEIGHT - 1), (255, 32, 0))
+        super(Food, self).__init__(screen, random.randint(0, CELL_COLUMNS - 1), random.randint(1, CELL_ROWS - 1), (255, 32, 0))
 
 
 def decode_input(direction: str, pressed: Tuple[int]) -> str:
@@ -146,7 +146,7 @@ def draw_background(screen: pygame.Surface) -> None:
 def display_score(screen: pygame.Surface, score: int) -> None:
     font = pygame.font.SysFont(None, 24)
     score_img = font.render(str(score), True, (255, 255, 255))
-    screen.blit(score_img, ((CELL_WIDTH - 4) * CELL_SIZE, 2))
+    screen.blit(score_img, ((CELL_COLUMNS - 4) * CELL_SIZE, 2))
 
 
 def play() -> None:
