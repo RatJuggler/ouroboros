@@ -31,22 +31,28 @@ MOVE_LEFT = 'left'
 MOVE_RIGHT = 'right'
 
 
-class Segment(pygame.sprite.Sprite):
+class Cell(pygame.sprite.Sprite):
 
-    def __init__(self, screen: pygame.Surface, at_cell_x: int, at_cell_y: int) -> None:
-        super(Segment, self).__init__()
+    def __init__(self, screen: pygame.Surface, at_cell_x: int, at_cell_y: int, colour: Tuple[int, int, int]) -> None:
+        super(Cell, self).__init__()
         self._screen = screen
         self._surface = pygame.Surface((CELL_SIZE, CELL_SIZE))
-        self._surface.fill((0, 255, 128))
+        self._surface.fill(colour)
         self.rectangle = self._surface.get_rect(
             topleft=(at_cell_x * CELL_SIZE, at_cell_y * CELL_SIZE)
         )
 
-    def slide(self, delta_x: int, delta_y: int) -> None:
-        self.rectangle.move_ip(delta_x, delta_y)
-
     def render(self) -> None:
         self._screen.blit(self._surface, self.rectangle)
+
+
+class Segment(Cell):
+
+    def __init__(self, screen: pygame.Surface, at_cell_x: int, at_cell_y: int) -> None:
+        super(Segment, self).__init__(screen, at_cell_x, at_cell_y, (0, 255, 128))
+
+    def slide(self, delta_x: int, delta_y: int) -> None:
+        self.rectangle.move_ip(delta_x, delta_y)
 
 
 class Head(Segment):
@@ -114,19 +120,10 @@ class Snake(pygame.sprite.Sprite):
         return self._head.rectangle.topleft == food.rectangle.topleft
 
 
-class Food(pygame.sprite.Sprite):
+class Food(Cell):
 
     def __init__(self, screen: pygame.Surface) -> None:
-        super(Food, self).__init__()
-        self._screen = screen
-        self._surface = pygame.Surface((CELL_SIZE, CELL_SIZE))
-        self._surface.fill((255, 32, 0))
-        self.rectangle = self._surface.get_rect(
-            topleft=(random.randint(0, CELL_WIDTH - 1) * CELL_SIZE, random.randint(1, CELL_HEIGHT - 1) * CELL_SIZE)
-        )
-
-    def render(self) -> None:
-        self._screen.blit(self._surface, self.rectangle)
+        super(Food, self).__init__(screen, random.randint(0, CELL_WIDTH - 1), random.randint(1, CELL_HEIGHT - 1), (255, 32, 0))
 
 
 def decode_input(direction: str, pressed: Tuple[int]) -> str:
