@@ -60,6 +60,9 @@ class Segment(pygame.sprite.Sprite):
         if self.rectangle.bottom > DISPLAY_HEIGHT:
             self.rectangle.bottom = DISPLAY_HEIGHT
 
+    def slide(self, delta_x: int, delta_y: int) -> None:
+        self.rectangle.move_ip(delta_x, delta_y)
+
     def render(self) -> None:
         self.screen.blit(self.surface, self.rectangle)
 
@@ -76,7 +79,16 @@ class Snake(pygame.sprite.Sprite):
         self.segments.add(Segment(self.screen, 3))
 
     def move(self, direction: str) -> None:
+        new_x = self.head.rectangle.x
+        new_y = self.head.rectangle.y
         self.head.move(direction)
+        for segment in self.segments:
+            if segment != self.head:
+                old_x = segment.rectangle.x
+                old_y = segment.rectangle.y
+                segment.slide(new_x - old_x, new_y - old_y)
+                new_x = old_x
+                new_y = old_y
 
     def render(self) -> None:
         for segment in self.segments:
