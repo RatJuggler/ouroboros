@@ -83,10 +83,10 @@ class Head(Cell):
         return self.valid_position()
 
 
-class Body(Cell):
+class Middle(Cell):
 
     def __init__(self, screen: pygame.Surface, at_cell_x: int, at_cell_y: int) -> None:
-        super(Body, self).__init__(screen, at_cell_x, at_cell_y, (0, 255, 0))
+        super(Middle, self).__init__(screen, at_cell_x, at_cell_y, (0, 255, 0))
 
 
 class Tail(Cell):
@@ -95,7 +95,34 @@ class Tail(Cell):
         super(Tail, self).__init__(screen, at_cell_x, at_cell_y, (96, 128, 96))
 
 
-class Snake(pygame.sprite.Sprite):
+class Body:
+
+    def __init__(self, screen: pygame.Surface, head: Head) -> None:
+        self._screen = screen
+        self._head = head
+        self._body = []
+        self._sprites = pygame.sprite.Group()
+
+    def grow(self) -> None:
+        middle = Middle(self._screen, self._head.prev_cell_x, self._head.prev_cell_y)
+        self._body.insert(0, middle)
+        self._sprites.add(middle)
+
+    def head_hit_body(self) -> bool:
+        return pygame.sprite.spritecollideany(self._head, self._body)
+
+    def move(self, prev_segment: Cell) -> Cell:
+        for segment in self._body:
+            segment.slide(prev_segment)
+            prev_segment = segment
+        return prev_segment
+
+    def render(self) -> None:
+        for segment in self._body:
+            segment.render()
+
+
+class Snake:
 
     def __init__(self, screen: pygame.Surface) -> None:
         super(Snake, self).__init__()
@@ -103,26 +130,23 @@ class Snake(pygame.sprite.Sprite):
         new_snake_x = (CELL_COLUMNS - 1) // 2
         new_snake_y = CELL_ROWS // 2
         self._head = Head(self._screen, new_snake_x, new_snake_y)
-        self._body = pygame.sprite.OrderedUpdates()
+        self._body = Body(self._screen, self._head)
         self._tail = Tail(self._screen, new_snake_x - 1, new_snake_y)
 
     def move_head(self, direction: str) -> bool:
-        return self._head.move_to(direction) and pygame.sprite.spritecollideany(self._head, self._body) is None
+        return self._head.move_to(direction) and not self._body.head_hit_body()
 
     def move_body(self) -> None:
         prev_segment = self._head
-        for segment in self._body:
-            segment.slide(prev_segment)
-            prev_segment = segment
+        self._body.move(prev_segment)
         self._tail.slide(prev_segment)
 
     def grow(self) -> None:
-        self._body.add(Body(self._screen, self._head.prev_cell_x, self._head.prev_cell_y))
+        self._body.grow()
 
     def render(self) -> None:
         self._head.render()
-        for segment in self._body:
-            segment.render()
+        self._body.render()
         self._tail.render()
 
     def found(self, food) -> bool:
