@@ -104,8 +104,7 @@ class Snake(pygame.sprite.Sprite):
         new_snake_y = CELL_ROWS // 2
         self._head = Head(self._screen, new_snake_x, new_snake_y)
         self._body = pygame.sprite.OrderedUpdates()
-        self._body.add(Body(self._screen, new_snake_x - 1, new_snake_y))
-        self._tail = Tail(self._screen, new_snake_x - 2, new_snake_y)
+        self._tail = Tail(self._screen, new_snake_x - 1, new_snake_y)
 
     def move_head(self, direction: str) -> bool:
         return self._head.move_to(direction) and pygame.sprite.spritecollideany(self._head, self._body) is None
