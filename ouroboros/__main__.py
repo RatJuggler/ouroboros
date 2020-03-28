@@ -37,25 +37,29 @@ class Cell(pygame.sprite.Sprite):
     def __init__(self, screen: pygame.Surface, at_cell_x: int, at_cell_y: int, colour: Tuple[int, int, int]) -> None:
         super(Cell, self).__init__()
         self._screen = screen
+        self.cell_x = at_cell_x
+        self.cell_y = at_cell_y
         self._surface = pygame.Surface((CELL_SIZE, CELL_SIZE))
         self._surface.fill(colour)
         # Must be named 'rect' for use by collision detection API.
         self.rect = self._surface.get_rect(
-            topleft=(at_cell_x, at_cell_y)
+            topleft=(at_cell_x * CELL_SIZE, at_cell_y * CELL_SIZE)
         )
-        self.prev_x = self.rect.x
-        self.prev_y = self.rect.y
+        self.prev_cell_x = at_cell_x
+        self.prev_cell_y = at_cell_y
 
     def render(self) -> None:
         self._screen.blit(self._surface, self.rect)
 
     def move(self, delta_x: int, delta_y: int) -> None:
-        self.prev_x = self.rect.x
-        self.prev_y = self.rect.y
-        self.rect.move_ip(delta_x, delta_y)
+        self.prev_cell_x = self.cell_x
+        self.prev_cell_y = self.cell_y
+        self.cell_x += delta_x
+        self.cell_y += delta_y
+        self.rect.move_ip(delta_x * CELL_SIZE, delta_y * CELL_SIZE)
 
     def slide(self, prev_cell) -> None:
-        self.move(prev_cell.prev_x - self.rect.x, prev_cell.prev_y - self.rect.y)
+        self.move(prev_cell.prev_cell_x - self.cell_x, prev_cell.prev_cell_y - self.cell_y)
 
     def valid_position(self) -> bool:
         return self.rect.left >= 0 and self.rect.right <= DISPLAY_WIDTH and \
@@ -69,13 +73,13 @@ class Head(Cell):
 
     def move_to(self, direction: str) -> bool:
         if direction == MOVE_UP:
-            self.move(0, -CELL_SIZE)
+            self.move(0, -1)
         elif direction == MOVE_DOWN:
-            self.move(0, CELL_SIZE)
+            self.move(0, 1)
         elif direction == MOVE_LEFT:
-            self.move(-CELL_SIZE, 0)
+            self.move(-1, 0)
         elif direction == MOVE_RIGHT:
-            self.move(CELL_SIZE, 0)
+            self.move(1, 0)
         return self.valid_position()
 
 
@@ -96,12 +100,12 @@ class Snake(pygame.sprite.Sprite):
     def __init__(self, screen: pygame.Surface) -> None:
         super(Snake, self).__init__()
         self._screen = screen
-        new_snake_x = ((CELL_COLUMNS - 1) // 2) * CELL_SIZE
-        new_snake_y = (CELL_ROWS // 2) * CELL_SIZE
+        new_snake_x = (CELL_COLUMNS - 1) // 2
+        new_snake_y = CELL_ROWS // 2
         self._head = Head(self._screen, new_snake_x, new_snake_y)
         self._body = pygame.sprite.OrderedUpdates()
-        self._body.add(Body(self._screen, new_snake_x - CELL_SIZE, new_snake_y))
-        self._tail = Tail(self._screen, new_snake_x - (2 * CELL_SIZE), new_snake_y)
+        self._body.add(Body(self._screen, new_snake_x - 1, new_snake_y))
+        self._tail = Tail(self._screen, new_snake_x - 2, new_snake_y)
 
     def move_head(self, direction: str) -> bool:
         return self._head.move_to(direction) and pygame.sprite.spritecollideany(self._head, self._body) is None
@@ -114,7 +118,7 @@ class Snake(pygame.sprite.Sprite):
         self._tail.slide(prev_segment)
 
     def grow(self) -> None:
-        self._body.add(Body(self._screen, self._head.prev_x, self._head.prev_y))
+        self._body.add(Body(self._screen, self._head.prev_cell_x, self._head.prev_cell_y))
 
     def render(self) -> None:
         self._head.render()
@@ -130,8 +134,8 @@ class Food(Cell):
 
     def __init__(self, screen: pygame.Surface) -> None:
         super(Food, self).__init__(screen,
-                                   random.randint(0, CELL_COLUMNS - 1) * CELL_SIZE,
-                                   random.randint(1, CELL_ROWS - 1) * CELL_SIZE,
+                                   random.randint(0, CELL_COLUMNS - 1),
+                                   random.randint(1, CELL_ROWS - 1),
                                    (255, 32, 0))
 
 
