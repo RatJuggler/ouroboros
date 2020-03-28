@@ -8,6 +8,7 @@ from pygame.locals import (
     K_DOWN, K_s,
     K_LEFT, K_a,
     K_RIGHT, K_d,
+    K_SPACE,
     K_ESCAPE,
     KEYDOWN,
     QUIT,
@@ -174,6 +175,8 @@ def play() -> None:
                 return
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
+                    return
+                if event.key == K_SPACE:
                     return
         direction = decode_input(direction, pygame.key.get_pressed())
         if not snake.move_head(direction):
