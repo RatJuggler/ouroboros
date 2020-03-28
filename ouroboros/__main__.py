@@ -83,10 +83,10 @@ class Head(Cell):
         return self.valid_position()
 
 
-class Middle(Cell):
+class Body(Cell):
 
     def __init__(self, screen: pygame.Surface, at_cell_x: int, at_cell_y: int) -> None:
-        super(Middle, self).__init__(screen, at_cell_x, at_cell_y, (0, 255, 0))
+        super(Body, self).__init__(screen, at_cell_x, at_cell_y, (0, 255, 0))
 
 
 class Tail(Cell):
@@ -95,58 +95,40 @@ class Tail(Cell):
         super(Tail, self).__init__(screen, at_cell_x, at_cell_y, (96, 128, 96))
 
 
-class Body:
+class Snake:
 
-    def __init__(self, screen: pygame.Surface, head: Head) -> None:
+    def __init__(self, screen: pygame.Surface, head: Head, tail: Tail) -> None:
         self._screen = screen
         self._head = head
         self._body = []
-        self._sprites = pygame.sprite.Group()
+        self._tail = tail
 
-    def grow(self) -> None:
-        middle = Middle(self._screen, self._head.prev_cell_x, self._head.prev_cell_y)
-        self._body.insert(0, middle)
-        self._sprites.add(middle)
-
-    def head_hit_body(self) -> bool:
-        return pygame.sprite.spritecollideany(self._head, self._body)
-
-    def move(self, prev_segment: Cell) -> Cell:
-        for segment in self._body:
-            segment.slide(prev_segment)
-            prev_segment = segment
-        return prev_segment
-
-    def render(self) -> None:
-        for segment in self._body:
-            segment.render()
-
-
-class Snake:
-
-    def __init__(self, screen: pygame.Surface) -> None:
-        super(Snake, self).__init__()
-        self._screen = screen
+    @classmethod
+    def new_snake(cls, screen: pygame.Surface) -> 'Snake':
         new_snake_x = (CELL_COLUMNS - 1) // 2
         new_snake_y = CELL_ROWS // 2
-        self._head = Head(self._screen, new_snake_x, new_snake_y)
-        self._body = Body(self._screen, self._head)
-        self._tail = Tail(self._screen, new_snake_x - 1, new_snake_y)
+        head = Head(screen, new_snake_x, new_snake_y)
+        tail = Tail(screen, new_snake_x - 1, new_snake_y)
+        return Snake(screen, head, tail)
 
     def move_head(self, direction: str) -> bool:
-        return self._head.move_to(direction) and not self._body.head_hit_body()
+        return self._head.move_to(direction) and pygame.sprite.spritecollideany(self._head, self._body) is None
+
+    def grow(self) -> None:
+        segment = Body(self._screen, self._head.prev_cell_x, self._head.prev_cell_y)
+        self._body.insert(0, segment)
 
     def move_body(self) -> None:
         prev_segment = self._head
-        self._body.move(prev_segment)
+        for segment in self._body:
+            segment.slide(prev_segment)
+            prev_segment = segment
         self._tail.slide(prev_segment)
-
-    def grow(self) -> None:
-        self._body.grow()
 
     def render(self) -> None:
         self._head.render()
-        self._body.render()
+        for segment in self._body:
+            segment.render()
         self._tail.render()
 
     def found(self, food) -> bool:
@@ -192,7 +174,7 @@ def play() -> None:
     screen = pygame.display.set_mode((DISPLAY_WIDTH, DISPLAY_HEIGHT))
     pygame.display.set_caption('Ouroboros')
     clock = pygame.time.Clock()
-    snake = Snake(screen)
+    snake = Snake.new_snake(screen)
     food = Food(screen)
     direction = MOVE_RIGHT
     score = 0
