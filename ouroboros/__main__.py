@@ -47,16 +47,16 @@ class Cell(pygame.sprite.Sprite):
         self.rect = self._surface.get_rect(
             topleft=(at_cell_x * CELL_SIZE, at_cell_y * CELL_SIZE)
         )
-        self.prev_cell_x = self._cell_x
-        self.prev_cell_y = self._cell_y
-        self.prev_direction = self._direction
+        self._prev_cell_x = self._cell_x
+        self._prev_cell_y = self._cell_y
+        self._prev_direction = self._direction
 
     def render(self) -> None:
         self._screen.blit(self._surface, self.rect)
 
     def _move(self, delta_x: int, delta_y: int) -> None:
-        self.prev_cell_x = self._cell_x
-        self.prev_cell_y = self._cell_y
+        self._prev_cell_x = self._cell_x
+        self._prev_cell_y = self._cell_y
         self._cell_x += delta_x
         self._cell_y += delta_y
         self.rect.move_ip(delta_x * CELL_SIZE, delta_y * CELL_SIZE)
@@ -65,8 +65,8 @@ class Cell(pygame.sprite.Sprite):
         return self.rect.left >= 0 and self.rect.right <= DISPLAY_WIDTH and \
             self.rect.top >= CELL_SIZE and self.rect.bottom <= DISPLAY_HEIGHT
 
-    def move_to(self, new_direction: Optional[str]) -> bool:
-        self.prev_direction = self._direction
+    def move_in(self, new_direction: Optional[str]) -> bool:
+        self._prev_direction = self._direction
         if new_direction:
             self._direction = new_direction
         if self._direction == UP:
@@ -79,8 +79,8 @@ class Cell(pygame.sprite.Sprite):
             self._move(1, 0)
         return self._valid_position()
 
-    def slide(self, prev_cell) -> None:
-        self.move_to(prev_cell.prev_direction)
+    def get_prev_direction(self) -> str:
+        return self._prev_direction
 
 
 class Head(Cell):
@@ -96,7 +96,7 @@ class Body(Cell):
 
     @classmethod
     def from_head(cls, head: Head) -> 'Body':
-        return Body(head._screen, head.prev_cell_x, head.prev_cell_y, head.prev_direction)
+        return Body(head._screen, head._prev_cell_x, head._prev_cell_y, head._prev_direction)
 
 
 class Tail(Cell):
@@ -122,7 +122,7 @@ class Snake:
         return Snake(screen, head, tail)
 
     def move_head(self, new_direction: str) -> bool:
-        return self._head.move_to(new_direction) and pygame.sprite.spritecollideany(self._head, self._body) is None
+        return self._head.move_in(new_direction) and pygame.sprite.spritecollideany(self._head, self._body) is None
 
     def grow(self) -> None:
         self._body.insert(0, Body.from_head(self._head))
@@ -130,9 +130,9 @@ class Snake:
     def move_body(self) -> None:
         prev_segment = self._head
         for segment in self._body:
-            segment.slide(prev_segment)
+            segment.move_in(prev_segment.get_prev_direction())
             prev_segment = segment
-        self._tail.slide(prev_segment)
+        self._tail.move_in(prev_segment.get_prev_direction())
 
     def render(self) -> None:
         self._head.render()
