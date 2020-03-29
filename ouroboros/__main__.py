@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Optional
 
 import pygame
 import random
@@ -34,71 +34,71 @@ RIGHT = 'right'
 
 class Cell(pygame.sprite.Sprite):
 
-    def __init__(self, screen: pygame.Surface, at_cell_x: int, at_cell_y: int, colour: Tuple[int, int, int]) -> None:
+    def __init__(self, screen: pygame.Surface, at_cell_x: int, at_cell_y: int,
+                 direction: Optional[str], colour: Tuple[int, int, int]) -> None:
         super(Cell, self).__init__()
         self._screen = screen
-        self.direction = RIGHT
-        self.cell_x = at_cell_x
-        self.cell_y = at_cell_y
+        self._cell_x = at_cell_x
+        self._cell_y = at_cell_y
+        self._direction = direction
         self._surface = pygame.Surface((CELL_SIZE, CELL_SIZE))
         self._surface.fill(colour)
         # Must be named 'rect' for use by collision detection API.
         self.rect = self._surface.get_rect(
             topleft=(at_cell_x * CELL_SIZE, at_cell_y * CELL_SIZE)
         )
-        self.prev_direction = self.direction
-        self.prev_cell_x = at_cell_x
-        self.prev_cell_y = at_cell_y
+        self.prev_cell_x = self._cell_x
+        self.prev_cell_y = self._cell_y
+        self.prev_direction = self._direction
 
     def render(self) -> None:
         self._screen.blit(self._surface, self.rect)
 
     def _move(self, delta_x: int, delta_y: int) -> None:
-        self.prev_cell_x = self.cell_x
-        self.prev_cell_y = self.cell_y
-        self.cell_x += delta_x
-        self.cell_y += delta_y
+        self.prev_cell_x = self._cell_x
+        self.prev_cell_y = self._cell_y
+        self._cell_x += delta_x
+        self._cell_y += delta_y
         self.rect.move_ip(delta_x * CELL_SIZE, delta_y * CELL_SIZE)
 
     def _valid_position(self) -> bool:
         return self.rect.left >= 0 and self.rect.right <= DISPLAY_WIDTH and \
             self.rect.top >= CELL_SIZE and self.rect.bottom <= DISPLAY_HEIGHT
 
-    def move_to(self, direction: str) -> bool:
-        self.prev_direction = self.direction
-        self.direction = direction
-        if direction == UP:
+    def move_to(self, new_direction: Optional[str]) -> bool:
+        self.prev_direction = self._direction
+        if new_direction:
+            self._direction = new_direction
+        if self._direction == UP:
             self._move(0, -1)
-        elif direction == DOWN:
+        elif self._direction == DOWN:
             self._move(0, 1)
-        elif direction == LEFT:
+        elif self._direction == LEFT:
             self._move(-1, 0)
-        elif direction == RIGHT:
+        elif self._direction == RIGHT:
             self._move(1, 0)
         return self._valid_position()
 
     def slide(self, prev_cell) -> None:
-        self.prev_direction = self.direction
-        self.direction = prev_cell.prev_direction
-        self._move(prev_cell.prev_cell_x - self.cell_x, prev_cell.prev_cell_y - self.cell_y)
+        self.move_to(prev_cell.prev_direction)
 
 
 class Head(Cell):
 
     def __init__(self, screen: pygame.Surface, at_x: int, at_y: int) -> None:
-        super(Head, self).__init__(screen, at_x, at_y, (64, 128, 64))
+        super(Head, self).__init__(screen, at_x, at_y, RIGHT, (64, 128, 64))
 
 
 class Body(Cell):
 
-    def __init__(self, screen: pygame.Surface, at_cell_x: int, at_cell_y: int) -> None:
-        super(Body, self).__init__(screen, at_cell_x, at_cell_y, (0, 255, 0))
+    def __init__(self, screen: pygame.Surface, at_cell_x: int, at_cell_y: int, direction: str) -> None:
+        super(Body, self).__init__(screen, at_cell_x, at_cell_y, direction, (0, 255, 0))
 
 
 class Tail(Cell):
 
     def __init__(self, screen: pygame.Surface, at_cell_x: int, at_cell_y: int) -> None:
-        super(Tail, self).__init__(screen, at_cell_x, at_cell_y, (96, 128, 96))
+        super(Tail, self).__init__(screen, at_cell_x, at_cell_y, RIGHT, (96, 128, 96))
 
 
 class Snake:
@@ -117,11 +117,11 @@ class Snake:
         tail = Tail(screen, new_snake_x - 1, new_snake_y)
         return Snake(screen, head, tail)
 
-    def move_head(self, direction: str) -> bool:
-        return self._head.move_to(direction) and pygame.sprite.spritecollideany(self._head, self._body) is None
+    def move_head(self, new_direction: str) -> bool:
+        return self._head.move_to(new_direction) and pygame.sprite.spritecollideany(self._head, self._body) is None
 
     def grow(self) -> None:
-        segment = Body(self._screen, self._head.prev_cell_x, self._head.prev_cell_y)
+        segment = Body(self._screen, self._head.prev_cell_x, self._head.prev_cell_y, self._head.prev_direction)
         self._body.insert(0, segment)
 
     def move_body(self) -> None:
@@ -147,19 +147,21 @@ class Food(Cell):
         super(Food, self).__init__(screen,
                                    random.randint(0, CELL_COLUMNS - 1),
                                    random.randint(1, CELL_ROWS - 1),
+                                   None,
                                    (255, 32, 0))
 
 
-def decode_input(direction: str, pressed: Tuple[int]) -> str:
+def decode_input(pressed: Tuple[int]) -> Optional[str]:
+    new_direction = None
     if pressed[K_UP] or pressed[K_w]:
-        direction = UP
+        new_direction = UP
     if pressed[K_DOWN] or pressed[K_s]:
-        direction = DOWN
+        new_direction = DOWN
     if pressed[K_LEFT] or pressed[K_a]:
-        direction = LEFT
+        new_direction = LEFT
     if pressed[K_RIGHT] or pressed[K_d]:
-        direction = RIGHT
-    return direction
+        new_direction = RIGHT
+    return new_direction
 
 
 def draw_background(screen: pygame.Surface) -> None:
@@ -182,7 +184,6 @@ def play() -> None:
     clock = pygame.time.Clock()
     snake = Snake.new_snake(screen)
     food = Food(screen)
-    direction = RIGHT
     score = 0
     while True:
         for event in pygame.event.get():
@@ -193,8 +194,8 @@ def play() -> None:
                     return
                 if event.key == K_SPACE:
                     return
-        direction = decode_input(direction, pygame.key.get_pressed())
-        if not snake.move_head(direction):
+        new_direction = decode_input(pygame.key.get_pressed())
+        if not snake.move_head(new_direction):
             return
         if snake.found(food):
             score += 1
