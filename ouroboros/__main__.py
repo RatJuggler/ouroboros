@@ -26,10 +26,10 @@ CELL_ROWS = DISPLAY_HEIGHT // CELL_SIZE
 BACKGROUND_COLOUR = (64, 64, 64)
 GRID_COLOUR = (128, 128, 128)
 
-MOVE_UP = 'up'
-MOVE_DOWN = 'down'
-MOVE_LEFT = 'left'
-MOVE_RIGHT = 'right'
+UP = 'up'
+DOWN = 'down'
+LEFT = 'left'
+RIGHT = 'right'
 
 
 class Cell(pygame.sprite.Sprite):
@@ -37,6 +37,7 @@ class Cell(pygame.sprite.Sprite):
     def __init__(self, screen: pygame.Surface, at_cell_x: int, at_cell_y: int, colour: Tuple[int, int, int]) -> None:
         super(Cell, self).__init__()
         self._screen = screen
+        self.direction = RIGHT
         self.cell_x = at_cell_x
         self.cell_y = at_cell_y
         self._surface = pygame.Surface((CELL_SIZE, CELL_SIZE))
@@ -45,42 +46,47 @@ class Cell(pygame.sprite.Sprite):
         self.rect = self._surface.get_rect(
             topleft=(at_cell_x * CELL_SIZE, at_cell_y * CELL_SIZE)
         )
+        self.prev_direction = self.direction
         self.prev_cell_x = at_cell_x
         self.prev_cell_y = at_cell_y
 
     def render(self) -> None:
         self._screen.blit(self._surface, self.rect)
 
-    def move(self, delta_x: int, delta_y: int) -> None:
+    def _move(self, delta_x: int, delta_y: int) -> None:
         self.prev_cell_x = self.cell_x
         self.prev_cell_y = self.cell_y
         self.cell_x += delta_x
         self.cell_y += delta_y
         self.rect.move_ip(delta_x * CELL_SIZE, delta_y * CELL_SIZE)
 
-    def slide(self, prev_cell) -> None:
-        self.move(prev_cell.prev_cell_x - self.cell_x, prev_cell.prev_cell_y - self.cell_y)
-
-    def valid_position(self) -> bool:
+    def _valid_position(self) -> bool:
         return self.rect.left >= 0 and self.rect.right <= DISPLAY_WIDTH and \
             self.rect.top >= CELL_SIZE and self.rect.bottom <= DISPLAY_HEIGHT
+
+    def move_to(self, direction: str) -> bool:
+        self.prev_direction = self.direction
+        self.direction = direction
+        if direction == UP:
+            self._move(0, -1)
+        elif direction == DOWN:
+            self._move(0, 1)
+        elif direction == LEFT:
+            self._move(-1, 0)
+        elif direction == RIGHT:
+            self._move(1, 0)
+        return self._valid_position()
+
+    def slide(self, prev_cell) -> None:
+        self.prev_direction = self.direction
+        self.direction = prev_cell.prev_direction
+        self._move(prev_cell.prev_cell_x - self.cell_x, prev_cell.prev_cell_y - self.cell_y)
 
 
 class Head(Cell):
 
     def __init__(self, screen: pygame.Surface, at_x: int, at_y: int) -> None:
         super(Head, self).__init__(screen, at_x, at_y, (64, 128, 64))
-
-    def move_to(self, direction: str) -> bool:
-        if direction == MOVE_UP:
-            self.move(0, -1)
-        elif direction == MOVE_DOWN:
-            self.move(0, 1)
-        elif direction == MOVE_LEFT:
-            self.move(-1, 0)
-        elif direction == MOVE_RIGHT:
-            self.move(1, 0)
-        return self.valid_position()
 
 
 class Body(Cell):
@@ -146,13 +152,13 @@ class Food(Cell):
 
 def decode_input(direction: str, pressed: Tuple[int]) -> str:
     if pressed[K_UP] or pressed[K_w]:
-        direction = MOVE_UP
+        direction = UP
     if pressed[K_DOWN] or pressed[K_s]:
-        direction = MOVE_DOWN
+        direction = DOWN
     if pressed[K_LEFT] or pressed[K_a]:
-        direction = MOVE_LEFT
+        direction = LEFT
     if pressed[K_RIGHT] or pressed[K_d]:
-        direction = MOVE_RIGHT
+        direction = RIGHT
     return direction
 
 
@@ -176,7 +182,7 @@ def play() -> None:
     clock = pygame.time.Clock()
     snake = Snake.new_snake(screen)
     food = Food(screen)
-    direction = MOVE_RIGHT
+    direction = RIGHT
     score = 0
     while True:
         for event in pygame.event.get():
