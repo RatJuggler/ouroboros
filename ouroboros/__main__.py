@@ -94,6 +94,10 @@ class Body(Cell):
     def __init__(self, screen: pygame.Surface, at_cell_x: int, at_cell_y: int, direction: str) -> None:
         super(Body, self).__init__(screen, at_cell_x, at_cell_y, direction, RGB(0, 255, 0))
 
+    @classmethod
+    def from_head(cls, head: Head) -> 'Body':
+        return Body(head._screen, head.prev_cell_x, head.prev_cell_y, head.prev_direction)
+
 
 class Tail(Cell):
 
@@ -121,8 +125,7 @@ class Snake:
         return self._head.move_to(new_direction) and pygame.sprite.spritecollideany(self._head, self._body) is None
 
     def grow(self) -> None:
-        segment = Body(self._screen, self._head.prev_cell_x, self._head.prev_cell_y, self._head.prev_direction)
-        self._body.insert(0, segment)
+        self._body.insert(0, Body.from_head(self._head))
 
     def move_body(self) -> None:
         prev_segment = self._head
