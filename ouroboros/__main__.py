@@ -23,8 +23,9 @@ assert DISPLAY_HEIGHT % CELL_SIZE == 0, "Display height must be a multiple of th
 CELL_COLUMNS = DISPLAY_WIDTH // CELL_SIZE
 CELL_ROWS = DISPLAY_HEIGHT // CELL_SIZE
 
-BACKGROUND_COLOUR = (64, 64, 64)
-GRID_COLOUR = (128, 128, 128)
+RGB = Tuple[int, int, int]
+BACKGROUND_COLOUR = RGB(64, 64, 64)
+GRID_COLOUR = RGB(128, 128, 128)
 
 UP = 'up'
 DOWN = 'down'
@@ -34,8 +35,7 @@ RIGHT = 'right'
 
 class Cell(pygame.sprite.Sprite):
 
-    def __init__(self, screen: pygame.Surface, at_cell_x: int, at_cell_y: int,
-                 direction: Optional[str], colour: Tuple[int, int, int]) -> None:
+    def __init__(self, screen: pygame.Surface, at_cell_x: int, at_cell_y: int, direction: Optional[str], colour: RGB) -> None:
         super(Cell, self).__init__()
         self._screen = screen
         self._cell_x = at_cell_x
@@ -86,19 +86,19 @@ class Cell(pygame.sprite.Sprite):
 class Head(Cell):
 
     def __init__(self, screen: pygame.Surface, at_x: int, at_y: int) -> None:
-        super(Head, self).__init__(screen, at_x, at_y, RIGHT, (64, 128, 64))
+        super(Head, self).__init__(screen, at_x, at_y, RIGHT, RGB(64, 128, 64))
 
 
 class Body(Cell):
 
     def __init__(self, screen: pygame.Surface, at_cell_x: int, at_cell_y: int, direction: str) -> None:
-        super(Body, self).__init__(screen, at_cell_x, at_cell_y, direction, (0, 255, 0))
+        super(Body, self).__init__(screen, at_cell_x, at_cell_y, direction, RGB(0, 255, 0))
 
 
 class Tail(Cell):
 
     def __init__(self, screen: pygame.Surface, at_cell_x: int, at_cell_y: int) -> None:
-        super(Tail, self).__init__(screen, at_cell_x, at_cell_y, RIGHT, (96, 128, 96))
+        super(Tail, self).__init__(screen, at_cell_x, at_cell_y, RIGHT, RGB(96, 128, 96))
 
 
 class Snake:
@@ -148,7 +148,7 @@ class Food(Cell):
                                    random.randint(0, CELL_COLUMNS - 1),
                                    random.randint(1, CELL_ROWS - 1),
                                    None,
-                                   (255, 32, 0))
+                                   RGB(255, 32, 0))
 
 
 def decode_input(pressed: Tuple[int]) -> Optional[str]:
@@ -174,7 +174,7 @@ def draw_background(screen: pygame.Surface) -> None:
 
 def display_score(screen: pygame.Surface, score: int) -> None:
     font = pygame.font.SysFont(None, 24)
-    score_img = font.render(str(score), True, (255, 255, 255))
+    score_img = font.render(str(score), True, RGB(255, 255, 255))
     screen.blit(score_img, ((CELL_COLUMNS - 4) * CELL_SIZE, 2))
 
 
