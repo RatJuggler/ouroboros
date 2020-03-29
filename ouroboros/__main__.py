@@ -62,8 +62,8 @@ class Cell(pygame.sprite.Sprite):
         self.rect.move_ip(delta_x * CELL_SIZE, delta_y * CELL_SIZE)
 
     def _valid_position(self) -> bool:
-        return self.rect.left >= 0 and self.rect.right <= DISPLAY_WIDTH and \
-            self.rect.top >= CELL_SIZE and self.rect.bottom <= DISPLAY_HEIGHT
+        return 0 <= self._cell_x < CELL_COLUMNS and \
+               1 <= self._cell_y < CELL_ROWS
 
     def move_in(self, new_direction: Optional[str]) -> bool:
         self._prev_direction = self._direction
