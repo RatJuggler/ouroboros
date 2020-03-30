@@ -10,7 +10,7 @@ from ouroboros.display import Display
 class Head(Cell):
 
     def __init__(self, display: Display, at: Tuple[int, int]) -> None:
-        super(Head, self).__init__(display, at, RIGHT, (64, 128, 64))
+        super(Head, self).__init__(display, at, RIGHT)
         self._prev_cell = None
         self._prev_direction = None
 
@@ -28,13 +28,13 @@ class Head(Cell):
 class Body(Cell):
 
     def __init__(self, display: Display, at_cell: Tuple[int, int], direction: str) -> None:
-        super(Body, self).__init__(display, at_cell, direction, (0, 255, 0))
+        super(Body, self).__init__(display, at_cell, direction)
 
 
 class Tail(Cell):
 
     def __init__(self, display: Display, at_cell: Tuple[int, int]) -> None:
-        super(Tail, self).__init__(display, at_cell, RIGHT, (96, 128, 96))
+        super(Tail, self).__init__(display, at_cell, RIGHT)
 
 
 class Snake:

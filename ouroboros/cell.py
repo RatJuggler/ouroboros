@@ -3,23 +3,21 @@ import pygame
 from typing import Optional, Tuple
 
 from ouroboros.direction import move_in
-from ouroboros.display import Display, RGB
+from ouroboros.display import Display
 
 
 class Cell(pygame.sprite.Sprite):
 
-    def __init__(self, display: Display, at_cell: Tuple[int, int], direction: Optional[str], colour: RGB) -> None:
+    def __init__(self, display: Display, at_cell: Tuple[int, int], direction: Optional[str]) -> None:
         super(Cell, self).__init__()
         self._display = display
         self._cell = at_cell
         self._direction = direction
-        self._surface = display.get_surface()
-        self._surface.fill(colour)
         # Must be named 'rect' for use by collision detection API.
         self.rect = display.get_rect(at_cell)
 
     def render(self) -> None:
-        self._display.blit(self._surface, self.rect)
+        self._display.blit(type(self).__name__, self.rect)
 
     def _move(self, delta_x: int, delta_y: int) -> bool:
         self._cell = (self._cell[0] + delta_x, self._cell[1] + delta_y)
