@@ -7,6 +7,7 @@ from typing import Tuple
 RGB = Tuple[int, int, int]
 BACKGROUND_COLOUR = (64, 64, 64)
 GRID_COLOUR = (128, 128, 128)
+TEXT_COLOUR = (255, 255, 255)
 
 
 class Display:
@@ -57,12 +58,12 @@ class Display:
 
     def show_score(self, score: int) -> None:
         font = pygame.font.SysFont(None, 24)
-        score_img = font.render(str(score), True, (255, 255, 255))
+        score_img = font.render(str(score), True, TEXT_COLOUR)
         self._screen.blit(score_img, ((self.CELL_COLUMNS - 4) * self.CELL_SIZE, 2))
 
     def show_paused(self) -> None:
         font = pygame.font.SysFont(None, 36)
-        score_img = font.render('P A U S E D', True, (255, 255, 255))
+        score_img = font.render('P A U S E D', True, TEXT_COLOUR)
         rect = score_img.get_rect()
         self._screen.blit(score_img, ((self.CELL_COLUMNS - 1) // 2 * self.CELL_SIZE - rect.width // 2,
                                       self.CELL_ROWS // 2 * self.CELL_SIZE - rect.width // 2))
