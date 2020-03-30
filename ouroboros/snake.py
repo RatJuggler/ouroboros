@@ -39,8 +39,7 @@ class Tail(Cell):
 
 class Snake:
 
-    def __init__(self, display: Display, head: Head, tail: Tail) -> None:
-        self._diplay = display
+    def __init__(self, head: Head, tail: Tail) -> None:
         self._head = head
         self._body = []
         self._tail = tail
@@ -50,7 +49,7 @@ class Snake:
         new_snake = display.get_center()
         head = Head(display, new_snake)
         tail = Tail(display, (new_snake[0] - 1, new_snake[1]))
-        return Snake(display, head, tail)
+        return Snake(head, tail)
 
     def move_head(self, new_direction: str) -> bool:
         self._head.mark_prev()
