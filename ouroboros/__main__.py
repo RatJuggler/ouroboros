@@ -187,6 +187,13 @@ def display_score(screen: pygame.Surface, score: int) -> None:
     screen.blit(score_img, ((CELL_COLUMNS - 4) * CELL_SIZE, 2))
 
 
+def display_paused(screen: pygame.Surface) -> None:
+    font = pygame.font.SysFont(None, 36)
+    score_img = font.render('P A U S E D', True, (255, 255, 255))
+    rect = score_img.get_rect()
+    screen.blit(score_img, ((CELL_COLUMNS - 1) // 2 * CELL_SIZE - rect.width // 2, CELL_ROWS // 2 * CELL_SIZE - rect.width // 2))
+
+
 def play() -> None:
     screen = pygame.display.set_mode((DISPLAY_WIDTH, DISPLAY_HEIGHT))
     pygame.display.set_caption('Ouroboros')
@@ -194,6 +201,7 @@ def play() -> None:
     snake = Snake.new_snake(screen)
     food = Food(screen)
     score = 0
+    pause = False
     while True:
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -202,21 +210,24 @@ def play() -> None:
                 if event.key == K_ESCAPE:
                     return
                 if event.key == K_SPACE:
-                    return
-        new_direction = decode_input(pygame.key.get_pressed())
-        if not snake.move_head(new_direction):
-            return
-        if snake.found(food):
-            score += 1
-            food.kill()
-            snake.grow()
-            food = Food(screen)
-        else:
-            snake.move_body()
+                    pause = not pause
+        if not pause:
+            new_direction = decode_input(pygame.key.get_pressed())
+            if not snake.move_head(new_direction):
+                return
+            if snake.found(food):
+                score += 1
+                food.kill()
+                snake.grow()
+                food = Food(screen)
+            else:
+                snake.move_body()
         draw_background(screen)
         display_score(screen, score)
         snake.render()
         food.render()
+        if pause:
+            display_paused(screen)
         pygame.display.flip()
         clock.tick(15)
 
