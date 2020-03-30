@@ -47,16 +47,11 @@ class Cell(pygame.sprite.Sprite):
         self.rect = self._surface.get_rect(
             topleft=(at_cell_x * CELL_SIZE, at_cell_y * CELL_SIZE)
         )
-        self._prev_cell_x = self._cell_x
-        self._prev_cell_y = self._cell_y
-        self._prev_direction = self._direction
 
     def render(self) -> None:
         self._screen.blit(self._surface, self.rect)
 
     def _move(self, delta_x: int, delta_y: int) -> None:
-        self._prev_cell_x = self._cell_x
-        self._prev_cell_y = self._cell_y
         self._cell_x += delta_x
         self._cell_y += delta_y
         self.rect.move_ip(delta_x * CELL_SIZE, delta_y * CELL_SIZE)
@@ -66,7 +61,6 @@ class Cell(pygame.sprite.Sprite):
                1 <= self._cell_y < CELL_ROWS
 
     def move_in(self, new_direction: Optional[str]) -> bool:
-        self._prev_direction = self._direction
         if new_direction:
             self._direction = new_direction
         if self._direction == UP:
@@ -79,24 +73,34 @@ class Cell(pygame.sprite.Sprite):
             self._move(1, 0)
         return self._valid_position()
 
-    def get_prev_direction(self) -> str:
-        return self._prev_direction
+    def get_direction(self) -> str:
+        return self._direction
 
 
 class Head(Cell):
 
     def __init__(self, screen: pygame.Surface, at_x: int, at_y: int) -> None:
         super(Head, self).__init__(screen, at_x, at_y, RIGHT, (64, 128, 64))
+        self._prev_cell_x = None
+        self._prev_cell_y = None
+        self._prev_direction = None
+
+    def mark_prev(self) -> None:
+        self._prev_cell_x = self._cell_x
+        self._prev_cell_y = self._cell_y
+        self._prev_direction = self._direction
+
+    def get_prev_direction(self) -> str:
+        return self._prev_direction
+
+    def grow_body(self) -> 'Body':
+        return Body(self._screen, self._prev_cell_x, self._prev_cell_y, self._prev_direction)
 
 
 class Body(Cell):
 
     def __init__(self, screen: pygame.Surface, at_cell_x: int, at_cell_y: int, direction: str) -> None:
         super(Body, self).__init__(screen, at_cell_x, at_cell_y, direction, (0, 255, 0))
-
-    @classmethod
-    def from_head(cls, head: Head) -> 'Body':
-        return Body(head._screen, head._prev_cell_x, head._prev_cell_y, head._prev_direction)
 
 
 class Tail(Cell):
@@ -122,17 +126,19 @@ class Snake:
         return Snake(screen, head, tail)
 
     def move_head(self, new_direction: str) -> bool:
+        self._head.mark_prev()
         return self._head.move_in(new_direction) and pygame.sprite.spritecollideany(self._head, self._body) is None
 
     def grow(self) -> None:
-        self._body.insert(0, Body.from_head(self._head))
+        self._body.insert(0, self._head.grow_body())
 
     def move_body(self) -> None:
-        prev_segment = self._head
+        prev_segment_direction = self._head.get_prev_direction()
         for segment in self._body:
-            segment.move_in(prev_segment.get_prev_direction())
-            prev_segment = segment
-        self._tail.move_in(prev_segment.get_prev_direction())
+            curr_segment_direction = segment.get_direction()
+            segment.move_in(prev_segment_direction)
+            prev_segment_direction = curr_segment_direction
+        self._tail.move_in(prev_segment_direction)
 
     def render(self) -> None:
         self._head.render()
