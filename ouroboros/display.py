@@ -43,11 +43,8 @@ class Display:
     def get_random_position(self) -> Tuple[int, int]:
         return random.randint(0, self.CELL_COLUMNS - 1), random.randint(1, self.CELL_ROWS - 1)
 
-    def get_center_column(self) -> int:
-        return (self.CELL_COLUMNS - 1) // 2
-
-    def get_center_row(self) -> int:
-        return self.CELL_ROWS // 2
+    def get_center(self) -> Tuple[int, int]:
+        return (self.CELL_COLUMNS - 1) // 2, self.CELL_ROWS // 2
 
     def draw_background(self) -> None:
         self._screen.fill(BACKGROUND_COLOUR)

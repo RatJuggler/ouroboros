@@ -47,10 +47,9 @@ class Snake:
 
     @classmethod
     def new_snake(cls, display: Display) -> 'Snake':
-        new_snake_x = display.get_center_column()
-        new_snake_y = display.get_center_row()
-        head = Head(display, (new_snake_x, new_snake_y))
-        tail = Tail(display, (new_snake_x - 1, new_snake_y))
+        new_snake = display.get_center()
+        head = Head(display, new_snake)
+        tail = Tail(display, (new_snake[0] - 1, new_snake[1]))
         return Snake(display, head, tail)
 
     def move_head(self, new_direction: str) -> bool:
