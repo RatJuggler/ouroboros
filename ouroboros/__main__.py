@@ -14,14 +14,13 @@ from pygame.locals import (
     QUIT,
 )
 
-DISPLAY_WIDTH = 800
-DISPLAY_HEIGHT = 600
-
-CELL_SIZE = 20
+CELL_SIZE = 32
+CELL_COLUMNS = 16 * 2
+CELL_ROWS = 9 * 2
+DISPLAY_WIDTH = CELL_COLUMNS * CELL_SIZE
+DISPLAY_HEIGHT = CELL_ROWS * CELL_SIZE
 assert DISPLAY_WIDTH % CELL_SIZE == 0, "Display width must be a multiple of the cell size."
 assert DISPLAY_HEIGHT % CELL_SIZE == 0, "Display height must be a multiple of the cell size."
-CELL_COLUMNS = DISPLAY_WIDTH // CELL_SIZE
-CELL_ROWS = DISPLAY_HEIGHT // CELL_SIZE
 
 RGB = Tuple[int, int, int]
 BACKGROUND_COLOUR = (64, 64, 64)
