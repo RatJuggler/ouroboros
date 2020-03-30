@@ -51,7 +51,7 @@ class Game:
             if pause:
                 self._display.show_paused()
             pygame.display.flip()
-            self._clock.tick(15)
+            self._clock.tick(10)
 
 
 if __name__ == '__main__':
