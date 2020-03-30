@@ -192,45 +192,49 @@ def display_paused(screen: pygame.Surface) -> None:
     screen.blit(score_img, ((CELL_COLUMNS - 1) // 2 * CELL_SIZE - rect.width // 2, CELL_ROWS // 2 * CELL_SIZE - rect.width // 2))
 
 
-def play() -> None:
-    screen = pygame.display.set_mode((DISPLAY_WIDTH, DISPLAY_HEIGHT))
-    pygame.display.set_caption('Ouroboros')
-    clock = pygame.time.Clock()
-    snake = Snake.new_snake(screen)
-    food = Food(screen)
-    score = 0
-    pause = False
-    while True:
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                return
-            if event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
+class Game:
+
+    def __init__(self) -> None:
+        self._screen = pygame.display.set_mode((DISPLAY_WIDTH, DISPLAY_HEIGHT))
+        pygame.display.set_caption('Ouroboros')
+        self._clock = pygame.time.Clock()
+
+    def play(self) -> None:
+        snake = Snake.new_snake(self._screen)
+        food = Food(self._screen)
+        score = 0
+        pause = False
+        while True:
+            for event in pygame.event.get():
+                if event.type == QUIT:
                     return
-                if event.key == K_SPACE:
-                    pause = not pause
-        if not pause:
-            new_direction = decode_input(pygame.key.get_pressed())
-            if not snake.move_head(new_direction):
-                return
-            if snake.found(food):
-                score += 1
-                food.kill()
-                snake.grow()
-                food = Food(screen)
-            else:
-                snake.move_body()
-        draw_background(screen)
-        display_score(screen, score)
-        snake.render()
-        food.render()
-        if pause:
-            display_paused(screen)
-        pygame.display.flip()
-        clock.tick(15)
+                if event.type == KEYDOWN:
+                    if event.key == K_ESCAPE:
+                        return
+                    if event.key == K_SPACE:
+                        pause = not pause
+            if not pause:
+                new_direction = decode_input(pygame.key.get_pressed())
+                if not snake.move_head(new_direction):
+                    return
+                if snake.found(food):
+                    score += 1
+                    food.kill()
+                    snake.grow()
+                    food = Food(self._screen)
+                else:
+                    snake.move_body()
+            draw_background(self._screen)
+            display_score(self._screen, score)
+            snake.render()
+            food.render()
+            if pause:
+                display_paused(self._screen)
+            pygame.display.flip()
+            self._clock.tick(15)
 
 
 if __name__ == '__main__':
     pygame.init()
-    play()
+    Game().play()
     pygame.quit()
