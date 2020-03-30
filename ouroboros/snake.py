@@ -1,5 +1,7 @@
 import pygame
 
+from typing import Tuple
+
 from ouroboros.cell import Cell
 from ouroboros.direction import RIGHT
 from ouroboros.display import Display
@@ -7,34 +9,32 @@ from ouroboros.display import Display
 
 class Head(Cell):
 
-    def __init__(self, display: Display, at_x: int, at_y: int) -> None:
-        super(Head, self).__init__(display, at_x, at_y, RIGHT, (64, 128, 64))
-        self._prev_cell_x = None
-        self._prev_cell_y = None
+    def __init__(self, display: Display, at: Tuple[int, int]) -> None:
+        super(Head, self).__init__(display, at, RIGHT, (64, 128, 64))
+        self._prev_cell = None
         self._prev_direction = None
 
     def mark_prev(self) -> None:
-        self._prev_cell_x = self._cell_x
-        self._prev_cell_y = self._cell_y
+        self._prev_cell = self._cell
         self._prev_direction = self._direction
 
     def get_prev_direction(self) -> str:
         return self._prev_direction
 
     def grow_body(self) -> 'Body':
-        return Body(self._display, self._prev_cell_x, self._prev_cell_y, self._prev_direction)
+        return Body(self._display, self._prev_cell, self._prev_direction)
 
 
 class Body(Cell):
 
-    def __init__(self, display: Display, at_cell_x: int, at_cell_y: int, direction: str) -> None:
-        super(Body, self).__init__(display, at_cell_x, at_cell_y, direction, (0, 255, 0))
+    def __init__(self, display: Display, at_cell: Tuple[int, int], direction: str) -> None:
+        super(Body, self).__init__(display, at_cell, direction, (0, 255, 0))
 
 
 class Tail(Cell):
 
-    def __init__(self, display: Display, at_cell_x: int, at_cell_y: int) -> None:
-        super(Tail, self).__init__(display, at_cell_x, at_cell_y, RIGHT, (96, 128, 96))
+    def __init__(self, display: Display, at_cell: Tuple[int, int]) -> None:
+        super(Tail, self).__init__(display, at_cell, RIGHT, (96, 128, 96))
 
 
 class Snake:
@@ -49,8 +49,8 @@ class Snake:
     def new_snake(cls, display: Display) -> 'Snake':
         new_snake_x = display.get_center_column()
         new_snake_y = display.get_center_row()
-        head = Head(display, new_snake_x, new_snake_y)
-        tail = Tail(display, new_snake_x - 1, new_snake_y)
+        head = Head(display, (new_snake_x, new_snake_y))
+        tail = Tail(display, (new_snake_x - 1, new_snake_y))
         return Snake(display, head, tail)
 
     def move_head(self, new_direction: str) -> bool:

@@ -1,4 +1,4 @@
-from typing import Tuple, Optional
+from typing import List, Optional, Tuple
 
 from pygame.locals import (
     K_UP, K_w,
@@ -13,7 +13,7 @@ LEFT = 'left'
 RIGHT = 'right'
 
 
-def decode_input(pressed: Tuple[int]) -> Optional[str]:
+def decode_input(pressed: List[int]) -> Optional[str]:
     new_direction = None
     if pressed[K_UP] or pressed[K_w]:
         new_direction = UP

@@ -25,9 +25,9 @@ class Display:
     def get_surface(self) -> pygame.Surface:
         return pygame.Surface((self.CELL_SIZE, self.CELL_SIZE))
 
-    def get_rect(self, surface: pygame.Surface, at_cell_x: int, at_cell_y: int):
+    def get_rect(self, surface: pygame.Surface, at_cell: Tuple[int, int]):
         return surface.get_rect(
-            topleft=(at_cell_x * self.CELL_SIZE, at_cell_y * self.CELL_SIZE)
+            topleft=(at_cell[0] * self.CELL_SIZE, at_cell[1] * self.CELL_SIZE)
         )
 
     def blit(self, surface: pygame.Surface, rect: pygame.rect) -> None:
@@ -36,14 +36,11 @@ class Display:
     def move_ip(self, rect: pygame.rect, delta_x: int, delta_y: int) -> None:
         rect.move_ip(delta_x * self.CELL_SIZE, delta_y * self.CELL_SIZE)
 
-    def valid_position(self, cell_x: int, cell_y: int) -> bool:
-        return 0 <= cell_x < self.CELL_COLUMNS and 1 <= cell_y < self.CELL_ROWS
+    def valid_position(self, position: Tuple[int, int]) -> bool:
+        return 0 <= position[0] < self.CELL_COLUMNS and 1 <= position[1] < self.CELL_ROWS
 
-    def get_random_column(self) -> int:
-        return random.randint(0, self.CELL_COLUMNS - 1)
-
-    def get_random_row(self) -> int:
-        return random.randint(1, self.CELL_ROWS - 1)
+    def get_random_position(self) -> Tuple[int, int]:
+        return random.randint(0, self.CELL_COLUMNS - 1), random.randint(1, self.CELL_ROWS - 1)
 
     def get_center_column(self) -> int:
         return (self.CELL_COLUMNS - 1) // 2
