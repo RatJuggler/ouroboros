@@ -16,7 +16,7 @@ class Cell(pygame.sprite.Sprite):
         self._surface = display.get_surface()
         self._surface.fill(colour)
         # Must be named 'rect' for use by collision detection API.
-        self.rect = display.get_rect(self._surface, at_cell)
+        self.rect = display.get_rect(at_cell)
 
     def render(self) -> None:
         self._display.blit(self._surface, self.rect)

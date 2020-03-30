@@ -26,10 +26,8 @@ class Display:
     def get_surface(self) -> pygame.Surface:
         return pygame.Surface((self.CELL_SIZE, self.CELL_SIZE))
 
-    def get_rect(self, surface: pygame.Surface, at_cell: Tuple[int, int]):
-        return surface.get_rect(
-            topleft=(at_cell[0] * self.CELL_SIZE, at_cell[1] * self.CELL_SIZE)
-        )
+    def get_rect(self, at_cell: Tuple[int, int]):
+        return pygame.Rect(at_cell[0] * self.CELL_SIZE, at_cell[1] * self.CELL_SIZE, self.CELL_SIZE, self.CELL_SIZE)
 
     def blit(self, surface: pygame.Surface, rect: pygame.rect) -> None:
         self._screen.blit(surface, rect)
