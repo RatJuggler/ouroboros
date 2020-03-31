@@ -20,10 +20,18 @@
     "right-down": "64, 0"
   },
   "Tail": {
-    "up": "0, 64",
-    "down": "0, 96",
-    "left": "32, 64",
-    "right": "32, 96"
+    "up-up": "128, 0",
+    "up-left": "32, 64",
+    "up-right": "0, 64",
+    "down-down": "128, 32",
+    "down-left": "32, 96",
+    "down-right": "0, 96",
+    "left-left": "128, 64",
+    "left-up": "160, 0",
+    "left-down": "160, 32",
+    "right-right": "128, 96",
+    "right-up": "160, 64",
+    "right-down": "160, 96"
   },
   "Food": {
     "fixed": "64, 96"

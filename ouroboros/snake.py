@@ -71,7 +71,7 @@ class Snake:
         follow_direction = self._head.render()
         for segment in self._body:
             follow_direction = segment.render(follow_direction)
-        self._tail.render()
+        self._tail.render(follow_direction)
 
     def found(self, food) -> bool:
         return pygame.sprite.collide_rect(self._head, food)

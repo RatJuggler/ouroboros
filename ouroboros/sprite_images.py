@@ -14,7 +14,9 @@ class SpriteImages:
 
     @classmethod
     def load_images(cls, display: Display) -> 'SpriteImages':
-        image_sheet = pygame.image.load('oroborus.png').convert()
+        image_sheet = pygame.image.load('oroborus.png').convert_alpha()
+        # transColor = image_sheet.get_at((0, 0))
+        # image_sheet.set_colorkey(transColor)
         images = {}
         with open('sprite_images.json') as json_file:
             sprite_images = json.load(json_file)
