@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='ouroboros',
-    version='0.0.5',
+    version='0.0.6',
     description='My take on the snake game.',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -40,7 +40,7 @@ setup(
         # Trove classifiers
         # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers
         'License :: OSI Approved :: MIT License',
-        'Development Status :: 1 - Planning',
+        'Development Status :: 2 - Pre-Alpha',
         'Programming Language :: Python :: 3.5',
         'Operating System :: POSIX :: Linux',
         'Topic:: Games / Entertainment:: Arcade'
