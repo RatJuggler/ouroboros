@@ -58,7 +58,7 @@ class Display:
         self._screen.blit(score_img, ((self.CELL_COLUMNS - 2) * self.CELL_SIZE, 2))
 
     def show_paused(self) -> None:
-        font = pygame.font.Font('rainyhearts .ttf', 128)
+        font = pygame.font.Font('rainyhearts.ttf', 128)
         score_img = font.render('P A U S E D', True, TEXT_COLOUR)
         rect = score_img.get_rect()
         self._screen.blit(score_img, ((self.CELL_COLUMNS - 1) // 2 * self.CELL_SIZE - rect.width // 2,
