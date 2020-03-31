@@ -1,0 +1,39 @@
+{
+  "Head": {
+    "up": "96, 0",
+    "down": "96, 32",
+    "left": "96, 64",
+    "right": "96, 96"
+  },
+  "Body": {
+    "up-up": "0, 32",
+    "up-left": "64, 0",
+    "up-right": "0, 0",
+    "down-down": "0, 32",
+    "down-left": "64, 32",
+    "down-right": "32, 32",
+    "left-left": "32, 0",
+    "left-up": "32, 32",
+    "left-down": "0, 0",
+    "right-right": "32, 0",
+    "right-up": "64, 32",
+    "right-down": "64, 0"
+  },
+  "Tail": {
+    "up-up": "128, 0",
+    "up-left": "32, 64",
+    "up-right": "0, 64",
+    "down-down": "128, 32",
+    "down-left": "32, 96",
+    "down-right": "0, 96",
+    "left-left": "128, 64",
+    "left-up": "160, 0",
+    "left-down": "160, 32",
+    "right-right": "128, 96",
+    "right-up": "160, 64",
+    "right-down": "160, 96"
+  },
+  "Food": {
+    "fixed": "64, 96"
+  }
+}

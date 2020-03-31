@@ -11,6 +11,7 @@ UP = 'up'
 DOWN = 'down'
 LEFT = 'left'
 RIGHT = 'right'
+FIXED = 'fixed'
 
 
 def decode_input(pressed: List[int]) -> Optional[str]:

@@ -11,17 +11,19 @@ from ouroboros.direction import decode_input
 from ouroboros.display import Display
 from ouroboros.food import Food
 from ouroboros.snake import Snake
+from ouroboros.sprite_images import SpriteImages
 
 
 class Game:
 
     def __init__(self) -> None:
         self._display = Display()
+        self._images = SpriteImages.load_images(self._display)
         self._clock = pygame.time.Clock()
 
     def play(self) -> None:
-        snake = Snake.new_snake(self._display)
-        food = Food(self._display)
+        snake = Snake.new_snake(self._display, self._images)
+        food = Food(self._display, self._images)
         score = 0
         pause = False
         while True:
@@ -41,7 +43,7 @@ class Game:
                     score += 1
                     food.kill()
                     snake.grow()
-                    food = Food(self._display)
+                    food = Food(self._display, self._images)
                 else:
                     snake.move_body()
             self._display.draw_background()
@@ -51,7 +53,7 @@ class Game:
             if pause:
                 self._display.show_paused()
             pygame.display.flip()
-            self._clock.tick(15)
+            self._clock.tick(10)
 
 
 if __name__ == '__main__':
