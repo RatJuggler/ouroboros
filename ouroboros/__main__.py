@@ -21,9 +21,16 @@ class Game:
         self._images = SpriteImages.load_images(self._display)
         self._clock = pygame.time.Clock()
 
+    def place_food(self, snake: Snake) -> Food:
+        while True:
+            food = Food(self._display, self._images)
+            if not snake.is_on_food(food):
+                break
+        return food
+
     def play(self) -> None:
         snake = Snake.new_snake(self._display, self._images)
-        food = Food(self._display, self._images)
+        food = self.place_food(snake)
         score = 0
         pause = False
         while True:
@@ -39,11 +46,11 @@ class Game:
                 new_direction = decode_input(pygame.key.get_pressed())
                 if not snake.move_head(new_direction):
                     return
-                if snake.found(food):
+                if snake.eats_food(food):
                     score += 1
                     food.kill()
                     snake.grow()
-                    food = Food(self._display, self._images)
+                    food = self.place_food(snake)
                 else:
                     snake.move_body()
             self._display.draw_background()
