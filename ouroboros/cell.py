@@ -9,17 +9,17 @@ from ouroboros.sprite_images import SpriteImages
 
 class Cell(pygame.sprite.Sprite):
 
-    def __init__(self, display: Display, at_cell: Tuple[int, int], direction: Optional[str]) -> None:
+    def __init__(self, display: Display, images: SpriteImages, at_cell: Tuple[int, int], direction: Optional[str]) -> None:
         super(Cell, self).__init__()
         self._display = display
+        self._images = images
         self._cell = at_cell
         self._direction = direction
         # Must be named 'rect' for use by collision detection API.
         self.rect = display.get_rect(at_cell)
-        self._images = SpriteImages.load_images(display, type(self).__name__)
 
-    def render(self, following_direction: str = '') -> str:
-        image = self._images.get_image(following_direction)
+    def render(self, following_direction: str = 'none') -> str:
+        image = self._images.get_image(type(self).__name__, following_direction)
         self._display.blit(image, self.rect)
         return self._direction
 
