@@ -58,13 +58,13 @@ class Display:
             pygame.draw.line(self._screen, GRID_COLOUR, (grid_column, self.CELL_SIZE), (grid_column, self.DISPLAY_HEIGHT))
 
     def show_score(self, score: int) -> None:
-        font = pygame.font.SysFont(None, 24)
-        score_img = font.render(str(score), True, TEXT_COLOUR)
-        self._screen.blit(score_img, ((self.CELL_COLUMNS - 4) * self.CELL_SIZE, 2))
+        font = pygame.font.SysFont(None, 46)
+        score_img = font.render('{0:04d}'.format(score), True, TEXT_COLOUR)
+        self._screen.blit(score_img, ((self.CELL_COLUMNS - 3) * self.CELL_SIZE, 2))
 
     def show_paused(self) -> None:
-        font = pygame.font.SysFont(None, 36)
+        font = pygame.font.SysFont(None, 128)
         score_img = font.render('P A U S E D', True, TEXT_COLOUR)
         rect = score_img.get_rect()
         self._screen.blit(score_img, ((self.CELL_COLUMNS - 1) // 2 * self.CELL_SIZE - rect.width // 2,
-                                      self.CELL_ROWS // 2 * self.CELL_SIZE - rect.width // 2))
+                                      self.CELL_ROWS // 2 * self.CELL_SIZE - rect.height // 2))
