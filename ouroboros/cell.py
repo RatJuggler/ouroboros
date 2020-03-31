@@ -19,7 +19,10 @@ class Cell(pygame.sprite.Sprite):
         self.rect = display.get_rect(at_cell)
 
     def render(self, following_direction: str = 'none') -> str:
-        image = self._images.get_image(type(self).__name__, following_direction)
+        image_key = self._direction
+        if following_direction != 'none':
+            image_key += '-' + following_direction
+        image = self._images.get_image(type(self).__name__, image_key)
         self._display.blit(image, self.rect)
         return self._direction
 
