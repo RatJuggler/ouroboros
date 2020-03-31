@@ -1,4 +1,5 @@
 from ouroboros.cell import Cell
+from ouroboros.direction import FIXED
 from ouroboros.display import Display
 from ouroboros.sprite_images import SpriteImages
 
@@ -9,4 +10,4 @@ class Food(Cell):
         super(Food, self).__init__(display,
                                    images,
                                    display.get_random_position(),
-                                   None)
+                                   FIXED)
