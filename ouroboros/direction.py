@@ -13,6 +13,8 @@ LEFT = 'left'
 RIGHT = 'right'
 FIXED = 'fixed'
 
+OPPOSITE_DIRECTION = {'up': 'down', 'down': 'up', 'left': 'right', 'right': 'left'}
+
 
 def decode_input(pressed: List[int]) -> Optional[str]:
     new_direction = None

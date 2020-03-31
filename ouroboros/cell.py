@@ -2,7 +2,7 @@ import pygame
 
 from typing import Optional, Tuple
 
-from ouroboros.direction import move_in
+from ouroboros.direction import move_in, OPPOSITE_DIRECTION
 from ouroboros.display import Display
 from ouroboros.sprite_images import SpriteImages
 
@@ -32,7 +32,7 @@ class Cell(pygame.sprite.Sprite):
         return self._display.valid_position(self._cell)
 
     def move_in(self, new_direction: Optional[str]) -> bool:
-        if new_direction:
+        if new_direction and new_direction != OPPOSITE_DIRECTION[self._direction]:
             self._direction = new_direction
         movement = move_in(self._direction)
         return self._move(movement[0], movement[1])
