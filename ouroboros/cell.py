@@ -4,6 +4,7 @@ from typing import Optional, Tuple
 
 from ouroboros.direction import move_in
 from ouroboros.display import Display
+from ouroboros.sprite_images import SpriteImages
 
 
 class Cell(pygame.sprite.Sprite):
@@ -15,9 +16,12 @@ class Cell(pygame.sprite.Sprite):
         self._direction = direction
         # Must be named 'rect' for use by collision detection API.
         self.rect = display.get_rect(at_cell)
+        self._images = SpriteImages.load_images(display, type(self).__name__)
 
-    def render(self) -> None:
-        self._display.blit(type(self).__name__, self.rect)
+    def render(self, following_direction: str = '') -> str:
+        image = self._images.get_image(following_direction)
+        self._display.blit(image, self.rect)
+        return self._direction
 
     def _move(self, delta_x: int, delta_y: int) -> bool:
         self._cell = (self._cell[0] + delta_x, self._cell[1] + delta_y)

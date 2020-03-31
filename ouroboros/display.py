@@ -3,7 +3,6 @@ import random
 
 from typing import Tuple
 
-
 RGB = Tuple[int, int, int]
 BACKGROUND_COLOUR = (64, 64, 64)
 GRID_COLOUR = (128, 128, 128)
@@ -22,12 +21,8 @@ class Display:
         assert self.DISPLAY_HEIGHT % self.CELL_SIZE == 0, "Display height must be a multiple of the cell size."
         self._screen = pygame.display.set_mode((self.DISPLAY_WIDTH, self.DISPLAY_HEIGHT))
         pygame.display.set_caption('Ouroboros')
-        self._images = {'Head': self._create_surface((64, 128, 64)),
-                        'Body': self._create_surface((0, 255, 0)),
-                        'Tail': self._create_surface((96, 128, 96)),
-                        'Food': self._create_surface((255, 32, 0))}
 
-    def _create_surface(self, colour: RGB) -> pygame.Surface:
+    def create_surface(self, colour: RGB) -> pygame.Surface:
         surface = pygame.Surface((self.CELL_SIZE, self.CELL_SIZE))
         surface.fill(colour)
         return surface
@@ -35,8 +30,8 @@ class Display:
     def get_rect(self, at_cell: Tuple[int, int]):
         return pygame.Rect(at_cell[0] * self.CELL_SIZE, at_cell[1] * self.CELL_SIZE, self.CELL_SIZE, self.CELL_SIZE)
 
-    def blit(self, object_name: str, rect: pygame.rect) -> None:
-        self._screen.blit(self._images[object_name], rect)
+    def blit(self, image: pygame.Surface, rect: pygame.rect) -> None:
+        self._screen.blit(image, rect)
 
     def move_ip(self, rect: pygame.rect, delta_x: int, delta_y: int) -> None:
         rect.move_ip(delta_x * self.CELL_SIZE, delta_y * self.CELL_SIZE)
