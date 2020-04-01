@@ -28,15 +28,14 @@ class Display:
         font = self._font_cache.get_font(size)
         text_img = font.render(text, True, TEXT_COLOUR)
         rect = text_img.get_rect()
-        self._screen.blit(text_img, (self.DISPLAY_WIDTH * x_prop - rect.width // 2,
-                                     self.DISPLAY_HEIGHT * y_prop - rect.height // 2))
+        self.blit(text_img, (self.DISPLAY_WIDTH * x_prop - rect.width // 2, self.DISPLAY_HEIGHT * y_prop - rect.height // 2))
 
     def create_surface(self, image_sheet: pygame.Surface, image_start: Tuple[int, int]) -> pygame.Surface:
         surface = pygame.Surface((self.CELL_SIZE, self.CELL_SIZE), pygame.SRCALPHA)
         surface.blit(image_sheet, (0, 0), (image_start[0], image_start[1], self.CELL_SIZE, self.CELL_SIZE))
         return surface
 
-    def get_rect(self, at_cell: Tuple[int, int]):
+    def get_rect(self, at_cell: Tuple[int, int]) -> pygame.Rect:
         return pygame.Rect(at_cell[0] * self.CELL_SIZE, at_cell[1] * self.CELL_SIZE, self.CELL_SIZE, self.CELL_SIZE)
 
     def blit(self, image: pygame.Surface, rect: pygame.rect) -> None:
@@ -60,6 +59,6 @@ class Display:
             pygame.draw.line(self._screen, GRID_COLOUR, (0, grid_row), (self.DISPLAY_WIDTH, grid_row))
         for grid_column in range(0, self.DISPLAY_WIDTH, self.CELL_SIZE):
             pygame.draw.line(self._screen, GRID_COLOUR, (grid_column, self.CELL_SIZE), (grid_column, self.DISPLAY_HEIGHT))
-        font = pygame.font.Font('rainyhearts.ttf', 32)
+        font = self._font_cache.get_font(32)
         score_img = font.render('{0:04d}'.format(score), True, TEXT_COLOUR)
-        self._screen.blit(score_img, ((self.CELL_COLUMNS - 2) * self.CELL_SIZE, 2))
+        self.blit(score_img, ((self.CELL_COLUMNS - 2) * self.CELL_SIZE, 2))
