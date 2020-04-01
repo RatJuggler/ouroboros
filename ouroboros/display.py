@@ -3,6 +3,8 @@ import random
 
 from typing import Tuple
 
+from ouroboros.font_cache import FontCache
+
 BACKGROUND_COLOUR = (64, 64, 64)
 GRID_COLOUR = (128, 128, 128)
 TEXT_COLOUR = (255, 255, 255)
@@ -20,9 +22,10 @@ class Display:
         assert self.DISPLAY_HEIGHT % self.CELL_SIZE == 0, "Display height must be a multiple of the cell size."
         self._screen = pygame.display.set_mode((self.DISPLAY_WIDTH, self.DISPLAY_HEIGHT))
         pygame.display.set_caption('Ouroboros')
+        self._font_cache = FontCache()
 
     def show_text(self, text: str, size: int, x_prop: float, y_prop: float) -> None:
-        font = pygame.font.Font('rainyhearts.ttf', size)
+        font = self._font_cache.get_font(size)
         text_img = font.render(text, True, TEXT_COLOUR)
         rect = text_img.get_rect()
         self._screen.blit(text_img, (self.DISPLAY_WIDTH * x_prop - rect.width // 2,
