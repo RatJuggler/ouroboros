@@ -76,7 +76,7 @@ class Game:
             snake.render()
             food.render()
             if pause:
-                self._display.show_paused()
+                self._display.show_text('P a u s e d', 64, 0.5, 0.5)
             pygame.display.flip()
             clock.tick(10)
 

@@ -22,19 +22,12 @@ class Display:
         self._screen = pygame.display.set_mode((self.DISPLAY_WIDTH, self.DISPLAY_HEIGHT))
         pygame.display.set_caption('Ouroboros')
 
-    def show_attract(self) -> None:
-        self.draw_background(0)
-        font = pygame.font.Font('rainyhearts.ttf', 96)
-        title_img = font.render('O U R O B O R O S', True, TEXT_COLOUR)
-        rect = title_img.get_rect()
-        self._screen.blit(title_img, (self.DISPLAY_WIDTH // 2 - rect.width // 2,
-                                      self.DISPLAY_HEIGHT // 2 - rect.height // 2))
-        font = pygame.font.Font('rainyhearts.ttf', 32)
-        start_img = font.render('Hit SPACE to start', True, TEXT_COLOUR)
-        rect = start_img.get_rect()
-        self._screen.blit(start_img, (self.DISPLAY_WIDTH // 2 - rect.width // 2,
-                                      self.DISPLAY_HEIGHT // 4 * 3 - rect.height // 2))
-        pygame.display.flip()
+    def show_text(self, text: str, size: int, x_prop: float, y_prop: float) -> None:
+        font = pygame.font.Font('rainyhearts.ttf', size)
+        text_img = font.render(text, True, TEXT_COLOUR)
+        rect = text_img.get_rect()
+        self._screen.blit(text_img, (self.DISPLAY_WIDTH * x_prop - rect.width // 2,
+                                     self.DISPLAY_HEIGHT * y_prop - rect.height // 2))
 
     def create_surface(self, image_sheet: pygame.Surface, image_start: Tuple[int, int]) -> pygame.Surface:
         surface = pygame.Surface((self.CELL_SIZE, self.CELL_SIZE), pygame.SRCALPHA)
@@ -68,10 +61,3 @@ class Display:
         font = pygame.font.Font('rainyhearts.ttf', 32)
         score_img = font.render('{0:04d}'.format(score), True, TEXT_COLOUR)
         self._screen.blit(score_img, ((self.CELL_COLUMNS - 2) * self.CELL_SIZE, 2))
-
-    def show_paused(self) -> None:
-        font = pygame.font.Font('rainyhearts.ttf', 128)
-        score_img = font.render('P A U S E D', True, TEXT_COLOUR)
-        rect = score_img.get_rect()
-        self._screen.blit(score_img, (self.DISPLAY_WIDTH // 2 - rect.width // 2,
-                                      self.DISPLAY_HEIGHT // 2 - rect.height // 2))
