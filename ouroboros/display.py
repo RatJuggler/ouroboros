@@ -22,6 +22,20 @@ class Display:
         self._screen = pygame.display.set_mode((self.DISPLAY_WIDTH, self.DISPLAY_HEIGHT))
         pygame.display.set_caption('Ouroboros')
 
+    def show_attract(self) -> None:
+        self.draw_background(0)
+        font = pygame.font.Font('rainyhearts.ttf', 96)
+        title_img = font.render('O U R O B O R O S', True, TEXT_COLOUR)
+        rect = title_img.get_rect()
+        self._screen.blit(title_img, (self.DISPLAY_WIDTH // 2 - rect.width // 2,
+                                      self.DISPLAY_HEIGHT // 2 - rect.height // 2))
+        font = pygame.font.Font('rainyhearts.ttf', 32)
+        start_img = font.render('Hit SPACE to start', True, TEXT_COLOUR)
+        rect = start_img.get_rect()
+        self._screen.blit(start_img, (self.DISPLAY_WIDTH // 2 - rect.width // 2,
+                                      self.DISPLAY_HEIGHT // 4 * 3 - rect.height // 2))
+        pygame.display.flip()
+
     def create_surface(self, image_sheet: pygame.Surface, image_start: Tuple[int, int]) -> pygame.Surface:
         surface = pygame.Surface((self.CELL_SIZE, self.CELL_SIZE), pygame.SRCALPHA)
         surface.blit(image_sheet, (0, 0), (image_start[0], image_start[1], self.CELL_SIZE, self.CELL_SIZE))
@@ -45,14 +59,12 @@ class Display:
     def get_center(self) -> Tuple[int, int]:
         return (self.CELL_COLUMNS - 1) // 2, self.CELL_ROWS // 2
 
-    def draw_background(self) -> None:
+    def draw_background(self, score: int) -> None:
         self._screen.fill(BACKGROUND_COLOUR)
         for grid_row in range(self.CELL_SIZE, self.DISPLAY_HEIGHT, self.CELL_SIZE):
             pygame.draw.line(self._screen, GRID_COLOUR, (0, grid_row), (self.DISPLAY_WIDTH, grid_row))
         for grid_column in range(0, self.DISPLAY_WIDTH, self.CELL_SIZE):
             pygame.draw.line(self._screen, GRID_COLOUR, (grid_column, self.CELL_SIZE), (grid_column, self.DISPLAY_HEIGHT))
-
-    def show_score(self, score: int) -> None:
         font = pygame.font.Font('rainyhearts.ttf', 32)
         score_img = font.render('{0:04d}'.format(score), True, TEXT_COLOUR)
         self._screen.blit(score_img, ((self.CELL_COLUMNS - 2) * self.CELL_SIZE, 2))
@@ -61,5 +73,5 @@ class Display:
         font = pygame.font.Font('rainyhearts.ttf', 128)
         score_img = font.render('P A U S E D', True, TEXT_COLOUR)
         rect = score_img.get_rect()
-        self._screen.blit(score_img, ((self.CELL_COLUMNS - 1) // 2 * self.CELL_SIZE - rect.width // 2,
-                                      self.CELL_ROWS // 2 * self.CELL_SIZE - rect.height // 2))
+        self._screen.blit(score_img, (self.DISPLAY_WIDTH // 2 - rect.width // 2,
+                                      self.DISPLAY_HEIGHT // 2 - rect.height // 2))
