@@ -3,7 +3,6 @@ import random
 
 from typing import Tuple
 
-RGB = Tuple[int, int, int]
 BACKGROUND_COLOUR = (64, 64, 64)
 GRID_COLOUR = (128, 128, 128)
 TEXT_COLOUR = (255, 255, 255)
