@@ -40,9 +40,14 @@ class Game:
                         return True
 
     def attract(self) -> bool:
+        """
+        Show the attract/title screen and wait for the start key.
+        :return: True start game otherwise exit
+        """
         self._display.draw_background(0)
         self._display.show_text('O U R O B O R O S', 96, 0.5, 0.5)
         self._display.show_text('Hit SPACE to start', 32, 0.5, 0.75)
+        self._display.show_text('ESC to quit', 24, 0.5, 0.80)
         return self._wait()
 
     def _place_food(self, snake: Snake) -> Food:
@@ -96,15 +101,21 @@ class Game:
             clock.tick(10)
 
     def over(self) -> bool:
+        """
+        Show the game over screen and wait for the key to restart.
+        :return: True continue otherwise exit
+        """
         self._display.show_text('G a m e  O v e r', 64, 0.5, 0.5)
         self._display.show_text('Hit SPACE to restart', 32, 0.5, 0.75)
+        self._display.show_text('ESC to quit', 16, 0.5, 0.80)
         return self._wait()
 
 
 if __name__ == '__main__':
     pygame.init()
     game = Game()
-    if game.attract():
+    new_game = game.attract()
+    while new_game:
         game.play()
-        game.over()
+        new_game = game.over()
     pygame.quit()
