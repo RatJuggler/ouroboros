@@ -39,7 +39,7 @@ class Game:
                     if event.key == K_SPACE:
                         return True
 
-    def attract(self) -> bool:
+    def _attract(self) -> bool:
         """
         Show the attract/title screen and wait for the start key.
         :return: True start game otherwise exit
@@ -62,7 +62,7 @@ class Game:
                 break
         return food
 
-    def play(self) -> None:
+    def _play(self) -> None:
         """
         Play the game.
         :return: no meaningful return
@@ -100,7 +100,7 @@ class Game:
             pygame.display.flip()
             clock.tick(10)
 
-    def over(self) -> bool:
+    def _over(self) -> bool:
         """
         Show the game over screen and wait for the key to restart.
         :return: True continue otherwise exit
@@ -110,12 +110,18 @@ class Game:
         self._display.show_text('ESC to quit', 16, 0.5, 0.80)
         return self._wait()
 
+    def run(self) -> None:
+        """
+        Entry point, show screens and play game.
+        :return: No meaningful return
+        """
+        new_game = self._attract()
+        while new_game:
+            self._play()
+            new_game = self._over()
+
 
 if __name__ == '__main__':
     pygame.init()
-    game = Game()
-    new_game = game.attract()
-    while new_game:
-        game.play()
-        new_game = game.over()
+    Game().run()
     pygame.quit()
