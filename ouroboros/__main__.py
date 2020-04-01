@@ -26,10 +26,8 @@ class Game:
         self._display = Display()
         self._images = SpriteImages.load_images(self._display)
 
-    def wait_on_attract(self) -> bool:
-        self._display.draw_background(0)
-        self._display.show_text('O U R O B O R O S', 96, 0.5, 0.5)
-        self._display.show_text('Hit SPACE to start', 32, 0.5, 0.75)
+    @classmethod
+    def _wait(cls) -> bool:
         pygame.display.flip()
         while True:
             for event in pygame.event.get():
@@ -40,6 +38,12 @@ class Game:
                         return False
                     if event.key == K_SPACE:
                         return True
+
+    def attract(self) -> bool:
+        self._display.draw_background(0)
+        self._display.show_text('O U R O B O R O S', 96, 0.5, 0.5)
+        self._display.show_text('Hit SPACE to start', 32, 0.5, 0.75)
+        return self._wait()
 
     def _place_food(self, snake: Snake) -> Food:
         """
@@ -91,10 +95,16 @@ class Game:
             pygame.display.flip()
             clock.tick(10)
 
+    def over(self) -> bool:
+        self._display.show_text('G a m e  O v e r', 64, 0.5, 0.5)
+        self._display.show_text('Hit SPACE to restart', 32, 0.5, 0.75)
+        return self._wait()
+
 
 if __name__ == '__main__':
     pygame.init()
     game = Game()
-    if game.wait_on_attract():
+    if game.attract():
         game.play()
+        game.over()
     pygame.quit()
