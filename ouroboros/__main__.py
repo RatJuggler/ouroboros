@@ -7,7 +7,6 @@ from pygame.locals import (
     QUIT,
 )
 
-from ouroboros.attract import Attract
 from ouroboros.direction import decode_input
 from ouroboros.display import Display
 from ouroboros.food import Food
@@ -28,7 +27,19 @@ class Game:
         self._images = SpriteImages.load_images(self._display)
 
     def wait_on_attract(self) -> bool:
-        return Attract(self._display).show_attract()
+        self._display.draw_background(0)
+        self._display.show_text('O U R O B O R O S', 96, 0.5, 0.5)
+        self._display.show_text('Hit SPACE to start', 32, 0.5, 0.75)
+        pygame.display.flip()
+        while True:
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    return False
+                if event.type == KEYDOWN:
+                    if event.key == K_ESCAPE:
+                        return False
+                    if event.key == K_SPACE:
+                        return True
 
     def _place_food(self, snake: Snake) -> Food:
         """
