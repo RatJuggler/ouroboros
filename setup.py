@@ -22,11 +22,12 @@ setup(
     packages=find_packages(exclude=['tests']),
     entry_points={
         'console_scripts': [
-            'ouroboros = ouroboros.__main__:play',
+            'ouroboros = ouroboros.__main__:main',
         ]
     },
     install_requires=[
-        'pygame'
+        'pygame',
+        'click'
     ],
     test_suite='tests',
     tests_require=[

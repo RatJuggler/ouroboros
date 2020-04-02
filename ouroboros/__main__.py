@@ -1,3 +1,4 @@
+import click
 import pygame
 
 from pygame.locals import (
@@ -19,11 +20,12 @@ class Game:
     The overall controlling class.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, windowed: bool) -> None:
         """
         Initialise the display controller and sprite image cache.
+        @param windowed: display in a window rather than full-screen
         """
-        self._display = Display()
+        self._display = Display(windowed)
         self._images = SpriteImages.load_images(self._display)
 
     @classmethod
@@ -108,7 +110,18 @@ class Game:
             new_game = self._over()
 
 
-if __name__ == '__main__':
+@click.command(help="""
+    Ouroborus - A snake game.
+                    """)
+@click.version_option()
+@click.option('-w', '--windowed', 'windowed', default=False, is_flag=True,
+              help="Run in a window rather than full-screen.",
+              show_default=True)
+def main(windowed: bool) -> None:
     pygame.init()
-    Game().run()
+    Game(windowed).run()
     pygame.quit()
+
+
+if __name__ == '__main__':
+    main()
