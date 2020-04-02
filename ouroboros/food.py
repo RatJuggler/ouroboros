@@ -1,8 +1,12 @@
+import pygame
+
 from ouroboros.cell import Cell
 from ouroboros.direction import FIXED
 from ouroboros.display import Display
 from ouroboros.snake import Snake
 from ouroboros.sprite_images import SpriteImages
+
+FOOD_ITEMS = 7
 
 
 class FoodItem(Cell):
@@ -16,18 +20,23 @@ class Food:
     def __init__(self, display: Display, images: SpriteImages) -> None:
         self._display = display
         self._images = images
-        self._food = None
+        self._food = []
 
     def add_food(self, snake: Snake) -> None:
-        if self._food:
-            self._food.kill()
-        while True:
-            self._food = FoodItem(self._display, self._images)
-            if not snake.is_on(self._food):
-                break
+        while len(self._food) < FOOD_ITEMS:
+            while True:
+                food_item = FoodItem(self._display, self._images)
+                if not pygame.sprite.spritecollideany(food_item, self._food) and not snake.is_on(food_item):
+                    break
+            self._food.append(food_item)
 
     def eaten_by(self, snake: Snake) -> bool:
-        return snake.eats(self._food)
+        eaten = snake.eats(self._food)
+        if eaten:
+            self._food.remove(eaten)
+            self.add_food(snake)
+        return eaten is not None
 
     def render(self) -> None:
-        self._food.render()
+        for food_item in self._food:
+            food_item.render()

@@ -78,7 +78,6 @@ class Game:
                     return
                 if food.eaten_by(snake):
                     score += 1
-                    food.add_food(snake)
                 else:
                     snake.move_body()
             self._display.draw_background(score)
