@@ -15,25 +15,26 @@ class FoodItem(Cell):
 
 class Food:
 
-    def __init__(self, display: Display, images: SpriteImages, food_items: int) -> None:
+    def __init__(self, display: Display, images: SpriteImages, snake: Snake, food_items: int) -> None:
         self._display = display
         self._images = images
+        self._snake = snake
         self._food_items = food_items
         self._food = []
 
-    def add_food(self, snake: Snake) -> None:
+    def add_food(self) -> None:
         while len(self._food) < self._food_items:
             while True:
                 food_item = FoodItem(self._display, self._images)
-                if not pygame.sprite.spritecollideany(food_item, self._food) and not snake.is_on(food_item):
+                if not pygame.sprite.spritecollideany(food_item, self._food) and not self._snake.is_on(food_item):
                     break
             self._food.append(food_item)
 
-    def eaten_by(self, snake: Snake) -> bool:
-        eaten = snake.eats(self._food)
+    def eaten(self) -> bool:
+        eaten = self._snake.eats(self._food)
         if eaten:
             self._food.remove(eaten)
-            self.add_food(snake)
+            self.add_food()
         return eaten is not None
 
     def render(self) -> None:

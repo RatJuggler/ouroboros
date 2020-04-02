@@ -104,8 +104,8 @@ class Game:
             food_level = 6
         else:
             food_level = 3
-        food = Food(self._display, self._images, food_level)
-        food.add_food(snake)
+        food = Food(self._display, self._images, snake, food_level)
+        food.add_food()
         score = 0
         pause = False
         clock = pygame.time.Clock()
@@ -122,7 +122,7 @@ class Game:
                 new_direction = decode_input(pygame.key.get_pressed())
                 if not snake.move_head(new_direction):
                     return
-                if food.eaten_by(snake):
+                if food.eaten():
                     score += 1
                 else:
                     snake.move_body()
