@@ -88,7 +88,6 @@ class Game:
                 if snake.eats_food(food):
                     score += 1
                     food.kill()
-                    snake.grow()
                     food = self._place_food(snake)
                 else:
                     snake.move_body()
