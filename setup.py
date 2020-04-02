@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='ouroboros',
-    version='0.0.6',
+    version='0.0.7',
     description='My take on the snake game.',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -22,11 +22,12 @@ setup(
     packages=find_packages(exclude=['tests']),
     entry_points={
         'console_scripts': [
-            'ouroboros = ouroboros.__main__:play',
+            'ouroboros = ouroboros.__main__:main',
         ]
     },
     install_requires=[
-        'pygame'
+        'pygame',
+        'click'
     ],
     test_suite='tests',
     tests_require=[
@@ -40,7 +41,7 @@ setup(
         # Trove classifiers
         # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers
         'License :: OSI Approved :: MIT License',
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 3 - Alpha',
         'Programming Language :: Python :: 3.5',
         'Operating System :: POSIX :: Linux',
         'Topic:: Games / Entertainment:: Arcade'

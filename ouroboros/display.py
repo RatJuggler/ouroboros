@@ -12,7 +12,7 @@ TEXT_COLOUR = (255, 255, 255)
 
 class Display:
 
-    def __init__(self) -> None:
+    def __init__(self, windowed: bool) -> None:
         self.CELL_SIZE = 32
         self.CELL_COLUMNS = 16 * 2
         self.CELL_ROWS = 9 * 2
@@ -20,7 +20,11 @@ class Display:
         self.DISPLAY_HEIGHT = self.CELL_ROWS * self.CELL_SIZE
         assert self.DISPLAY_WIDTH % self.CELL_SIZE == 0, "Display width must be a multiple of the cell size."
         assert self.DISPLAY_HEIGHT % self.CELL_SIZE == 0, "Display height must be a multiple of the cell size."
-        self._screen = pygame.display.set_mode((self.DISPLAY_WIDTH, self.DISPLAY_HEIGHT))
+        if windowed:
+            flags = 0
+        else:
+            flags = pygame.FULLSCREEN | pygame.DOUBLEBUF | pygame.HWSURFACE
+        self._screen = pygame.display.set_mode((self.DISPLAY_WIDTH, self.DISPLAY_HEIGHT), flags)
         pygame.display.set_caption('Ouroboros')
         self._font_cache = FontCache()
 
@@ -53,12 +57,13 @@ class Display:
     def get_center(self) -> Tuple[int, int]:
         return (self.CELL_COLUMNS - 1) // 2, self.CELL_ROWS // 2
 
-    def draw_background(self, score: int) -> None:
+    def draw_background(self, draw_grid: bool = True, score: int = 0) -> None:
         self._screen.fill(BACKGROUND_COLOUR)
-        for grid_row in range(self.CELL_SIZE, self.DISPLAY_HEIGHT, self.CELL_SIZE):
-            pygame.draw.line(self._screen, GRID_COLOUR, (0, grid_row), (self.DISPLAY_WIDTH, grid_row))
-        for grid_column in range(0, self.DISPLAY_WIDTH, self.CELL_SIZE):
-            pygame.draw.line(self._screen, GRID_COLOUR, (grid_column, self.CELL_SIZE), (grid_column, self.DISPLAY_HEIGHT))
+        if draw_grid:
+            for grid_row in range(self.CELL_SIZE, self.DISPLAY_HEIGHT, self.CELL_SIZE):
+                pygame.draw.line(self._screen, GRID_COLOUR, (0, grid_row), (self.DISPLAY_WIDTH, grid_row))
+            for grid_column in range(0, self.DISPLAY_WIDTH, self.CELL_SIZE):
+                pygame.draw.line(self._screen, GRID_COLOUR, (grid_column, self.CELL_SIZE), (grid_column, self.DISPLAY_HEIGHT))
         font = self._font_cache.get_font(32)
         score_img = font.render('{0:04d}'.format(score), True, TEXT_COLOUR)
         self.blit(score_img, ((self.CELL_COLUMNS - 2) * self.CELL_SIZE, 2))

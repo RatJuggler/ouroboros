@@ -1,9 +1,13 @@
 {
   "Head": {
-    "up": "96, 0",
-    "down": "96, 32",
-    "left": "96, 64",
-    "right": "96, 96"
+    "up-False": "96, 0",
+    "down-False": "96, 32",
+    "left-False": "96, 64",
+    "right-False": "96, 96",
+    "up-True": "192, 0",
+    "down-True": "192, 32",
+    "left-True": "192, 64",
+    "right-True": "192, 96"
   },
   "Body": {
     "up-up": "0, 32",
@@ -33,7 +37,7 @@
     "right-up": "160, 64",
     "right-down": "160, 96"
   },
-  "Food": {
+  "FoodItem": {
     "fixed": "64, 96"
   }
 }

@@ -1,11 +1,10 @@
 import pygame
 
-from typing import Tuple
+from typing import List, Optional, Tuple
 
 from ouroboros.cell import Cell
 from ouroboros.direction import RIGHT
 from ouroboros.display import Display
-from ouroboros.food import Food
 from ouroboros.sprite_images import SpriteImages
 
 
@@ -45,6 +44,7 @@ class Snake:
         self._head = head
         self._body = []
         self._tail = tail
+        self._eating = False
 
     @classmethod
     def new_snake(cls, display: Display, images: SpriteImages) -> 'Snake':
@@ -57,9 +57,6 @@ class Snake:
         self._head.mark_prev()
         return self._head.move_in(new_direction) and pygame.sprite.spritecollideany(self._head, self._body) is None
 
-    def grow(self) -> None:
-        self._body.insert(0, self._head.grow_body())
-
     def move_body(self) -> None:
         prev_segment_direction = self._head.get_prev_direction()
         for segment in self._body:
@@ -69,13 +66,19 @@ class Snake:
         self._tail.move_in(prev_segment_direction)
 
     def render(self) -> None:
-        follow_direction = self._head.render()
+        follow_direction = self._head.render(str(self._eating))
         for segment in self._body:
             follow_direction = segment.render(follow_direction)
         self._tail.render(follow_direction)
 
-    def eats_food(self, food: Food) -> bool:
-        return pygame.sprite.collide_rect(self._head, food)
+    def eats(self, cells: List[Cell]) -> Optional[Cell]:
+        eats = pygame.sprite.spritecollideany(self._head, cells)
+        if eats:
+            self._eating = True
+            self._body.insert(0, self._head.grow_body())
+        else:
+            self._eating = False
+        return eats
 
-    def is_on_food(self, food: Food) -> bool:
-        return pygame.sprite.collide_rect(self._head, food) or pygame.sprite.spritecollideany(food, self._body)
+    def is_on(self, cell: Cell) -> bool:
+        return pygame.sprite.collide_rect(cell, self._head) or pygame.sprite.spritecollideany(cell, self._body)
