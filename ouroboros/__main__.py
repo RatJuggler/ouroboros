@@ -98,7 +98,13 @@ class Game:
         :return: no meaningful return
         """
         snake = Snake.new_snake(self._display, self._images)
-        food = Food(self._display, self._images)
+        if difficulty == MenuKey.DIFFICULTY_EASY:
+            food_level = 9
+        elif difficulty == MenuKey.DIFFICULTY_MEDIUM:
+            food_level = 6
+        else:
+            food_level = 3
+        food = Food(self._display, self._images, food_level)
         food.add_food(snake)
         score = 0
         pause = False
@@ -120,7 +126,7 @@ class Game:
                     score += 1
                 else:
                     snake.move_body()
-            self._display.draw_background(score)
+            self._display.draw_background(difficulty != MenuKey.DIFFICULTY_HARD, score)
             snake.render()
             food.render()
             if pause:
