@@ -5,7 +5,6 @@ from typing import Tuple
 from ouroboros.cell import Cell
 from ouroboros.direction import RIGHT
 from ouroboros.display import Display
-from ouroboros.food import Food
 from ouroboros.sprite_images import SpriteImages
 
 
@@ -72,11 +71,11 @@ class Snake:
             follow_direction = segment.render(follow_direction)
         self._tail.render(follow_direction)
 
-    def eats_food(self, food: Food) -> bool:
-        self._eating = pygame.sprite.collide_rect(self._head, food) == 1
+    def eats(self, cell: Cell) -> bool:
+        self._eating = pygame.sprite.collide_rect(cell, self._head) == 1
         if self._eating:
             self._body.insert(0, self._head.grow_body())
         return self._eating
 
-    def is_on_food(self, food: Food) -> bool:
-        return pygame.sprite.collide_rect(self._head, food) or pygame.sprite.spritecollideany(food, self._body)
+    def is_on(self, cell: Cell) -> bool:
+        return pygame.sprite.collide_rect(cell, self._head) or pygame.sprite.spritecollideany(cell, self._body)

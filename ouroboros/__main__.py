@@ -50,25 +50,14 @@ class Game:
         self._display.show_text('ESC to quit', 24, 0.5, 0.80)
         return self._wait()
 
-    def _place_food(self, snake: Snake) -> Food:
-        """
-        Ensure new food isn't placed on the snake.
-        :param snake: current snake
-        :return: the new food
-        """
-        while True:
-            food = Food(self._display, self._images)
-            if not snake.is_on_food(food):
-                break
-        return food
-
     def _play(self) -> None:
         """
         Play the game.
         :return: no meaningful return
         """
         snake = Snake.new_snake(self._display, self._images)
-        food = self._place_food(snake)
+        food = Food(self._display, self._images)
+        food.add_food(snake)
         score = 0
         pause = False
         clock = pygame.time.Clock()
@@ -85,10 +74,9 @@ class Game:
                 new_direction = decode_input(pygame.key.get_pressed())
                 if not snake.move_head(new_direction):
                     return
-                if snake.eats_food(food):
+                if food.eaten_by(snake):
                     score += 1
-                    food.kill()
-                    food = self._place_food(snake)
+                    food.add_food(snake)
                 else:
                     snake.move_body()
             self._display.draw_background(score)

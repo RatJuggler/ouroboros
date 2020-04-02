@@ -37,7 +37,7 @@
     "right-up": "160, 64",
     "right-down": "160, 96"
   },
-  "Food": {
+  "FoodItem": {
     "fixed": "64, 96"
   }
 }
