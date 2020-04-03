@@ -53,7 +53,7 @@ class Display:
 
     def get_random_position(self, edge_buffer: int) -> Tuple[int, int]:
         return random.randint(edge_buffer, self.CELL_COLUMNS - edge_buffer - 1), \
-               random.randint(edge_buffer + 1, self.CELL_ROWS - edge_buffer - 1)
+            random.randint(edge_buffer + 1, self.CELL_ROWS - edge_buffer - 1)
 
     def get_center(self) -> Tuple[int, int]:
         return (self.CELL_COLUMNS - 1) // 2, self.CELL_ROWS // 2
