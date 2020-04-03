@@ -4,6 +4,7 @@ from ouroboros.cell import Cell
 from ouroboros.input import FIXED, Selected
 from ouroboros.display import Display
 from ouroboros.snake import Snake
+from ouroboros.sounds import Sounds
 from ouroboros.sprite_images import SpriteImages
 
 
@@ -15,9 +16,10 @@ class FoodItem(Cell):
 
 class Food:
 
-    def __init__(self, display: Display, images: SpriteImages, snake: Snake, difficulty: Selected) -> None:
+    def __init__(self, display: Display, images: SpriteImages, sounds: Sounds, snake: Snake, difficulty: Selected) -> None:
         self._display = display
         self._images = images
+        self._sounds = sounds
         self._snake = snake
         self._edge_buffer = 0
         if difficulty == Selected.DIFFICULTY_EASY:
@@ -40,6 +42,7 @@ class Food:
     def eaten(self) -> bool:
         eaten = self._snake.eats(self._food)
         if eaten:
+            self._sounds.play_sound('eating')
             self._food.remove(eaten)
             self.add_food()
         return eaten is not None

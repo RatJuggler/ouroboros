@@ -5,6 +5,7 @@ from typing import List, Optional, Tuple
 from ouroboros.cell import Cell
 from ouroboros.input import RIGHT
 from ouroboros.display import Display
+from ouroboros.sounds import Sounds
 from ouroboros.sprite_images import SpriteImages
 
 
@@ -40,22 +41,26 @@ class Tail(Cell):
 
 class Snake:
 
-    def __init__(self, head: Head, tail: Tail) -> None:
+    def __init__(self, head: Head, tail: Tail, sounds: Sounds) -> None:
         self._head = head
         self._body = []
         self._tail = tail
+        self._sounds = sounds
         self._eating = False
 
     @classmethod
-    def new_snake(cls, display: Display, images: SpriteImages) -> 'Snake':
+    def new_snake(cls, display: Display, images: SpriteImages, sounds: Sounds) -> 'Snake':
         snake_start = display.get_center()
         head = Head(display, images, snake_start)
         tail = Tail(display, images, (snake_start[0] - 1, snake_start[1]))
-        return Snake(head, tail)
+        return Snake(head, tail, sounds)
 
     def move_head(self, new_direction: str) -> bool:
         self._head.mark_prev()
-        return self._head.move_in(new_direction) and pygame.sprite.spritecollideany(self._head, self._body) is None
+        move_ok = self._head.move_in(new_direction) and pygame.sprite.spritecollideany(self._head, self._body) is None
+        if not move_ok:
+            self._sounds.play_sound('died')
+        return move_ok
 
     def move_body(self) -> None:
         prev_segment_direction = self._head.get_prev_direction()

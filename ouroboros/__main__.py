@@ -5,6 +5,7 @@ from ouroboros.input import decode_input, Selected, wait_for_selection, check_fo
 from ouroboros.display import Display
 from ouroboros.food import Food
 from ouroboros.snake import Snake
+from ouroboros.sounds import Sounds
 from ouroboros.sprite_images import SpriteImages
 
 
@@ -20,6 +21,7 @@ class Game:
         """
         self._display = Display(windowed)
         self._images = SpriteImages.load_images(self._display)
+        self._sounds = Sounds.load_sounds()
 
     def _attract(self) -> Selected:
         """
@@ -53,8 +55,8 @@ class Game:
         :param difficulty: level to play the game
         :return: no meaningful return
         """
-        snake = Snake.new_snake(self._display, self._images)
-        food = Food(self._display, self._images, snake, difficulty)
+        snake = Snake.new_snake(self._display, self._images, self._sounds)
+        food = Food(self._display, self._images, self._sounds, snake, difficulty)
         food.add_food()
         score = 0
         pause = False
