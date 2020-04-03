@@ -1,4 +1,7 @@
 from pygame.font import Font
+from pygame.surface import SurfaceType
+
+TEXT_COLOUR = (255, 255, 255)
 
 
 class FontCache:
@@ -16,3 +19,7 @@ class FontCache:
         if font is None:
             font = self._cache_font(size)
         return font
+
+    def render_text(self, text: str, size: int) -> SurfaceType:
+        font = self.get_font(size)
+        return font.render(text, True, TEXT_COLOUR)
