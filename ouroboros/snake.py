@@ -1,16 +1,17 @@
 import pygame
 
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 from ouroboros.cell import Cell, RIGHT
 from ouroboros.display import Display
 from ouroboros.sounds import Sounds
 from ouroboros.sprite_images import SpriteImages
+from ouroboros.utils import Point
 
 
 class Head(Cell):
 
-    def __init__(self, display: Display, images: SpriteImages, at: Tuple[int, int]) -> None:
+    def __init__(self, display: Display, images: SpriteImages, at: Point) -> None:
         super(Head, self).__init__(display, images, at, RIGHT)
         self._prev_cell = None
         self._prev_direction = None
@@ -28,13 +29,13 @@ class Head(Cell):
 
 class Body(Cell):
 
-    def __init__(self, display: Display, images: SpriteImages, at_cell: Tuple[int, int], direction: str) -> None:
+    def __init__(self, display: Display, images: SpriteImages, at_cell: Point, direction: str) -> None:
         super(Body, self).__init__(display, images, at_cell, direction)
 
 
 class Tail(Cell):
 
-    def __init__(self, display: Display, images: SpriteImages, at_cell: Tuple[int, int]) -> None:
+    def __init__(self, display: Display, images: SpriteImages, at_cell: Point) -> None:
         super(Tail, self).__init__(display, images, at_cell, RIGHT)
 
 

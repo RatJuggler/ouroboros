@@ -20,10 +20,7 @@ class Display:
         self.DISPLAY_HEIGHT = self.CELL_ROWS * self.CELL_SIZE
         assert self.DISPLAY_WIDTH % self.CELL_SIZE == 0, "Display width must be a multiple of the cell size."
         assert self.DISPLAY_HEIGHT % self.CELL_SIZE == 0, "Display height must be a multiple of the cell size."
-        if windowed:
-            flags = 0
-        else:
-            flags = pygame.FULLSCREEN | pygame.DOUBLEBUF | pygame.HWSURFACE
+        flags = 0 if windowed else pygame.FULLSCREEN | pygame.DOUBLEBUF | pygame.HWSURFACE
         self._screen = pygame.display.set_mode((self.DISPLAY_WIDTH, self.DISPLAY_HEIGHT), flags)
         pygame.display.set_caption('Ouroboros')
         self._font_cache = FontCache()
