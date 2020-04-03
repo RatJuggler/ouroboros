@@ -10,8 +10,8 @@ class Sounds:
 
     @classmethod
     def load_sounds(cls) -> 'Sounds':
-        sounds = {'eating': pygame.mixer.Sound('eat.ogg'),
-                  'died': pygame.mixer.Sound('died.ogg')}
+        sounds = {'eating': pygame.mixer.Sound('eat.wav'),
+                  'died': pygame.mixer.Sound('died.wav')}
         return Sounds(sounds)
 
     def play_sound(self, name: str) -> None:
