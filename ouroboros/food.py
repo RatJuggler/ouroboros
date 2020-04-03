@@ -9,8 +9,8 @@ from ouroboros.sprite_images import SpriteImages
 
 class FoodItem(Cell):
 
-    def __init__(self, display: Display, images: SpriteImages) -> None:
-        super(FoodItem, self).__init__(display, images, display.get_random_position(), FIXED)
+    def __init__(self, display: Display, images: SpriteImages, edge_buffer: int) -> None:
+        super(FoodItem, self).__init__(display, images, display.get_random_position(edge_buffer), FIXED)
 
 
 class Food:
@@ -19,8 +19,10 @@ class Food:
         self._display = display
         self._images = images
         self._snake = snake
+        self._edge_buffer = 0
         if difficulty == Selected.DIFFICULTY_EASY:
             self._food_level = 9
+            self._edge_buffer = 1
         elif difficulty == Selected.DIFFICULTY_MEDIUM:
             self._food_level = 6
         else:
@@ -30,7 +32,7 @@ class Food:
     def add_food(self) -> None:
         while len(self._food) < self._food_level:
             while True:
-                food_item = FoodItem(self._display, self._images)
+                food_item = FoodItem(self._display, self._images, self._edge_buffer)
                 if not pygame.sprite.spritecollideany(food_item, self._food) and not self._snake.is_on(food_item):
                     break
             self._food.append(food_item)
