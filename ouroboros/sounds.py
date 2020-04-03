@@ -1,6 +1,8 @@
+import pygame
+
 from typing import Dict
 
-import pygame
+from ouroboros.utils import full_file_path
 
 
 class Sounds:
@@ -10,8 +12,8 @@ class Sounds:
 
     @classmethod
     def load_sounds(cls) -> 'Sounds':
-        sounds = {'eating': pygame.mixer.Sound('eat.wav'),
-                  'died': pygame.mixer.Sound('died.wav')}
+        sounds = {'eating': pygame.mixer.Sound(full_file_path('eat.wav')),
+                  'died': pygame.mixer.Sound(full_file_path('died.wav'))}
         return Sounds(sounds)
 
     def play_sound(self, name: str) -> None:
