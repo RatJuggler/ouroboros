@@ -1,9 +1,10 @@
-from typing import Dict
-
 import json
 import pygame
 
+from typing import Dict
+
 from ouroboros.display import Display
+from ouroboros.utils import full_file_path
 
 
 class SpriteImages:
@@ -14,9 +15,9 @@ class SpriteImages:
 
     @classmethod
     def load_images(cls, display: Display) -> 'SpriteImages':
-        image_sheet = pygame.image.load('oroborus.png')
+        image_sheet = pygame.image.load(full_file_path('oroborus.png'))
         images = {}
-        with open('sprite_images.json') as json_file:
+        with open(full_file_path('sprite_images.json')) as json_file:
             sprite_images = json.load(json_file)
             for for_class, direction_images in sprite_images.items():
                 class_images = {}

@@ -1,31 +1,40 @@
 import pygame
 
-from ouroboros.cell import Cell
-from ouroboros.direction import FIXED
+from ouroboros.cell import Cell, FIXED
+from ouroboros.input import Selected
 from ouroboros.display import Display
 from ouroboros.snake import Snake
+from ouroboros.sounds import Sounds
 from ouroboros.sprite_images import SpriteImages
 
 
 class FoodItem(Cell):
 
-    def __init__(self, display: Display, images: SpriteImages) -> None:
-        super(FoodItem, self).__init__(display, images, display.get_random_position(), FIXED)
+    def __init__(self, display: Display, images: SpriteImages, edge_buffer: int) -> None:
+        super(FoodItem, self).__init__(display, images, display.get_random_position(edge_buffer), FIXED)
 
 
 class Food:
 
-    def __init__(self, display: Display, images: SpriteImages, snake: Snake, food_items: int) -> None:
+    def __init__(self, display: Display, images: SpriteImages, sounds: Sounds, snake: Snake, difficulty: Selected) -> None:
         self._display = display
         self._images = images
+        self._sounds = sounds
         self._snake = snake
-        self._food_items = food_items
+        self._edge_buffer = 0
+        if difficulty == Selected.DIFFICULTY_EASY:
+            self._food_level = 9
+            self._edge_buffer = 1
+        elif difficulty == Selected.DIFFICULTY_MEDIUM:
+            self._food_level = 6
+        else:
+            self._food_level = 3
         self._food = []
 
     def add_food(self) -> None:
-        while len(self._food) < self._food_items:
+        while len(self._food) < self._food_level:
             while True:
-                food_item = FoodItem(self._display, self._images)
+                food_item = FoodItem(self._display, self._images, self._edge_buffer)
                 if not pygame.sprite.spritecollideany(food_item, self._food) and not self._snake.is_on(food_item):
                     break
             self._food.append(food_item)
@@ -33,6 +42,7 @@ class Food:
     def eaten(self) -> bool:
         eaten = self._snake.eats(self._food)
         if eaten:
+            self._sounds.play_sound('eating')
             self._food.remove(eaten)
             self.add_food()
         return eaten is not None

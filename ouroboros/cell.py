@@ -1,15 +1,23 @@
 import pygame
 
-from typing import Optional, Tuple
+from typing import Optional
 
-from ouroboros.direction import move_in, OPPOSITE_DIRECTION
 from ouroboros.display import Display
 from ouroboros.sprite_images import SpriteImages
+from ouroboros.utils import Point
+
+UP = 'up'
+DOWN = 'down'
+LEFT = 'left'
+RIGHT = 'right'
+FIXED = 'fixed'
+
+OPPOSITE_DIRECTION = {'up': 'down', 'down': 'up', 'left': 'right', 'right': 'left'}
 
 
 class Cell(pygame.sprite.Sprite):
 
-    def __init__(self, display: Display, images: SpriteImages, at_cell: Tuple[int, int], direction: Optional[str]) -> None:
+    def __init__(self, display: Display, images: SpriteImages, at_cell: Point, direction: Optional[str]) -> None:
         super(Cell, self).__init__()
         self._display = display
         self._images = images
@@ -26,16 +34,25 @@ class Cell(pygame.sprite.Sprite):
         self._display.blit(image, self.rect)
         return self._direction
 
-    def _move(self, delta_x: int, delta_y: int) -> bool:
-        self._cell = (self._cell[0] + delta_x, self._cell[1] + delta_y)
-        self._display.move_ip(self.rect, delta_x, delta_y)
+    def _move(self, delta: Point) -> bool:
+        self._cell = (self._cell[0] + delta[0], self._cell[1] + delta[1])
+        self._display.move_ip(self.rect, delta[0], delta[1])
         return self._display.valid_position(self._cell)
 
     def move_in(self, new_direction: Optional[str]) -> bool:
         if new_direction and new_direction != OPPOSITE_DIRECTION[self._direction]:
             self._direction = new_direction
-        movement = move_in(self._direction)
-        return self._move(movement[0], movement[1])
+        if self._direction == UP:
+            move = 0, -1
+        elif self._direction == DOWN:
+            move = 0, 1
+        elif self._direction == LEFT:
+            move = -1, 0
+        elif self._direction == RIGHT:
+            move = 1, 0
+        else:
+            move = 0, 0
+        return self._move(move)
 
     def get_direction(self) -> str:
         return self._direction

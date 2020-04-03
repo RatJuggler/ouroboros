@@ -5,14 +5,14 @@ with open("README.md", "r") as fh:
 
 setup(
     name='ouroboros',
-    version='0.0.7',
+    version='0.0.8',
     description='My take on the snake game.',
     long_description=long_description,
     long_description_content_type='text/markdown',
     keywords='pygame snake',
     author='John Chase',
     author_email='ratteal@gmail.com',
-    python_requires='>=3.5',
+    python_requires='>=3.6',
     url='https://github.com/RatJuggler/ouroboros',
     project_urls={
         "Documentation": "https://github.com/RatJuggler/ouroboros",
@@ -41,8 +41,8 @@ setup(
         # Trove classifiers
         # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers
         'License :: OSI Approved :: MIT License',
-        'Development Status :: 3 - Alpha',
-        'Programming Language :: Python :: 3.5',
+        'Development Status :: 4 - Beta',
+        'Programming Language :: Python :: 3.6',
         'Operating System :: POSIX :: Linux',
         'Topic:: Games / Entertainment:: Arcade'
     ]
