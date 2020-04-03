@@ -2,8 +2,7 @@ import pygame
 
 from typing import List, Optional, Tuple
 
-from ouroboros.cell import Cell
-from ouroboros.input import RIGHT
+from ouroboros.cell import Cell, RIGHT
 from ouroboros.display import Display
 from ouroboros.sounds import Sounds
 from ouroboros.sprite_images import SpriteImages

@@ -1,7 +1,7 @@
 import pygame
 
-from ouroboros.cell import Cell
-from ouroboros.input import FIXED, Selected
+from ouroboros.cell import Cell, FIXED
+from ouroboros.input import Selected
 from ouroboros.display import Display
 from ouroboros.snake import Snake
 from ouroboros.sounds import Sounds

@@ -1,8 +1,8 @@
 import enum
-
-from typing import List, Optional, Tuple
-
 import pygame
+
+from typing import List, Optional
+
 from pygame.locals import (
     K_1,
     K_2,
@@ -17,13 +17,7 @@ from pygame.locals import (
     K_RIGHT, K_d,
 )
 
-UP = 'up'
-DOWN = 'down'
-LEFT = 'left'
-RIGHT = 'right'
-FIXED = 'fixed'
-
-OPPOSITE_DIRECTION = {'up': 'down', 'down': 'up', 'left': 'right', 'right': 'left'}
+from ouroboros.cell import UP, DOWN, LEFT, RIGHT
 
 
 class Selected(enum.Enum):
@@ -35,7 +29,7 @@ class Selected(enum.Enum):
     CONTINUE = 99
 
 
-def wait_for_selection(incl_continue: bool = True, incl_difficulty = False) -> Selected:
+def wait_for_selection(incl_continue: bool = True, incl_difficulty: bool = False) -> Selected:
     while True:
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -76,14 +70,3 @@ def decode_input(pressed: List[int]) -> Optional[str]:
     if pressed[K_RIGHT] or pressed[K_d]:
         new_direction = RIGHT
     return new_direction
-
-
-def move_in(direction: str) -> Tuple[int, int]:
-    if direction == UP:
-        return 0, -1
-    elif direction == DOWN:
-        return 0, 1
-    elif direction == LEFT:
-        return -1, 0
-    elif direction == RIGHT:
-        return 1, 0
