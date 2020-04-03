@@ -1,7 +1,7 @@
 import pygame
 
 from ouroboros.cell import Cell
-from ouroboros.direction import FIXED
+from ouroboros.input import FIXED, Selected
 from ouroboros.display import Display
 from ouroboros.snake import Snake
 from ouroboros.sprite_images import SpriteImages
@@ -15,15 +15,20 @@ class FoodItem(Cell):
 
 class Food:
 
-    def __init__(self, display: Display, images: SpriteImages, snake: Snake, food_items: int) -> None:
+    def __init__(self, display: Display, images: SpriteImages, snake: Snake, difficulty: Selected) -> None:
         self._display = display
         self._images = images
         self._snake = snake
-        self._food_items = food_items
+        if difficulty == Selected.DIFFICULTY_EASY:
+            self._food_level = 9
+        elif difficulty == Selected.DIFFICULTY_MEDIUM:
+            self._food_level = 6
+        else:
+            self._food_level = 3
         self._food = []
 
     def add_food(self) -> None:
-        while len(self._food) < self._food_items:
+        while len(self._food) < self._food_level:
             while True:
                 food_item = FoodItem(self._display, self._images)
                 if not pygame.sprite.spritecollideany(food_item, self._food) and not self._snake.is_on(food_item):

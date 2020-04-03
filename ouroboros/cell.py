@@ -2,7 +2,7 @@ import pygame
 
 from typing import Optional, Tuple
 
-from ouroboros.direction import move_in, OPPOSITE_DIRECTION
+from ouroboros.input import move_in, OPPOSITE_DIRECTION
 from ouroboros.display import Display
 from ouroboros.sprite_images import SpriteImages
 

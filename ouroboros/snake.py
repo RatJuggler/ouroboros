@@ -3,7 +3,7 @@ import pygame
 from typing import List, Optional, Tuple
 
 from ouroboros.cell import Cell
-from ouroboros.direction import RIGHT
+from ouroboros.input import RIGHT
 from ouroboros.display import Display
 from ouroboros.sprite_images import SpriteImages
 
