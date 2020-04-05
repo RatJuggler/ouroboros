@@ -8,7 +8,8 @@ My take on the old snake game.
 ![Animated GIF of the game running](https://raw.githubusercontent.com/RatJuggler/ouroboros/master/demo.gif)
 
 ## Installing
-Checkout the source code from here:
+I've tested this on Ubuntu and Windows 10 using Python 3.6/3.7 with no problems. So assuming that you already have Python and Pip 
+installed checkout the source code from here:
 ```
 $ git clone https://github.com/RatJuggler/ouroboros.git
 $ cd ouroboros
@@ -31,3 +32,7 @@ Options:
   -w, --windowed  Run in a window rather than full-screen.  [default: False]
   --help          Show this message and exit.
 ```
+## Attributions
+- Rainy Hearts font by [Camellina](https://www.dafont.com/rainyhearts.font).
+- Sounds from [OpenGameArt](https://opengameart.org/).
+- Sprites created using [aseprite](https://dacap.itch.io/aseprite).
