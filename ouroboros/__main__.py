@@ -8,6 +8,9 @@ from ouroboros.snake import Snake
 from ouroboros.sounds import Sounds
 from ouroboros.sprite_images import SpriteImages
 
+HIGH_GREEN = pygame.Color('GREENYELLOW')
+LOW_GREEN = pygame.Color('SPRINGGREEN')
+
 
 class Game:
     """
@@ -28,12 +31,24 @@ class Game:
         Show the attract/title screen and wait for the start key.
         :return: MenuKey selected to start or exit the game
         """
-        self._display.draw_background()
-        self._display.show_text('O U R O B O R O S', 96, 0.5, 0.5)
-        self._display.show_text('Hit SPACE to start', 32, 0.5, 0.75)
-        self._display.show_text('ESC to quit', 24, 0.5, 0.80)
-        pygame.display.flip()
-        return check_for_selection()
+        selection = None
+        title_swap = True
+        clock = pygame.time.Clock()
+        while selection is None:
+            self._display.draw_background()
+            self._display.show_text('O   R   B   R   S', 96, 0.5,
+                                    0.4 if title_swap else 0.5,
+                                    HIGH_GREEN if title_swap else LOW_GREEN)
+            self._display.show_text('  U   O   O   O  ', 96, 0.5,
+                                    0.5 if title_swap else 0.4,
+                                    LOW_GREEN if title_swap else HIGH_GREEN)
+            title_swap = not title_swap
+            self._display.show_text('Hit SPACE to start', 32, 0.5, 0.75, pygame.Color('GOLD'))
+            self._display.show_text('ESC to quit', 24, 0.5, 0.80, pygame.Color('GOLD'))
+            pygame.display.flip()
+            clock.tick(3)
+            selection = check_for_selection(False)
+        return selection
 
     def _difficulty(self) -> Selected:
         """
