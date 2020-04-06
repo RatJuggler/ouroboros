@@ -29,8 +29,8 @@ class Selected(enum.Enum):
     CONTINUE = 99
 
 
-def wait_for_selection(incl_continue: bool = True, incl_difficulty: bool = False) -> Selected:
-    while True:
+def check_for_selection(wait: bool = True, incl_continue: bool = True, incl_difficulty: bool = False) -> Selected:
+    while wait:
         for event in pygame.event.get():
             if event.type == QUIT:
                 return Selected.QUIT

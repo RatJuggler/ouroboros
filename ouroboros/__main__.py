@@ -1,7 +1,7 @@
 import click
 import pygame
 
-from ouroboros.input import decode_input, Selected, wait_for_selection, check_for_override
+from ouroboros.input import decode_input, Selected, check_for_selection, check_for_override
 from ouroboros.display import Display
 from ouroboros.food import Food
 from ouroboros.snake import Snake
@@ -33,7 +33,7 @@ class Game:
         self._display.show_text('Hit SPACE to start', 32, 0.5, 0.75)
         self._display.show_text('ESC to quit', 24, 0.5, 0.80)
         pygame.display.flip()
-        return wait_for_selection()
+        return check_for_selection()
 
     def _difficulty(self) -> Selected:
         """
@@ -47,7 +47,7 @@ class Game:
         self._display.show_text('(3) Hard - Even less food, no grid lines', 32, 0.5, 0.50)
         self._display.show_text('Use WASD or the arrow keys to control the snake.', 32, 0.5, 0.70)
         pygame.display.flip()
-        return wait_for_selection(False, True)
+        return check_for_selection(True, False, True)
 
     def _play(self, difficulty: Selected) -> None:
         """
@@ -92,7 +92,7 @@ class Game:
         self._display.show_text('Hit SPACE to restart', 32, 0.5, 0.75)
         self._display.show_text('ESC to quit', 16, 0.5, 0.80)
         pygame.display.flip()
-        return wait_for_selection()
+        return check_for_selection()
 
     def run(self) -> None:
         """
