@@ -1,9 +1,8 @@
-from pygame.font import Font
-from pygame.surface import SurfaceType
+import pygame
 
 from ouroboros.utils import full_file_path
 
-TEXT_COLOUR = (255, 255, 255)
+DEFAULT_TEXT_COLOUR = pygame.Color('WHITE')
 
 
 class FontCache:
@@ -12,16 +11,16 @@ class FontCache:
         self._fonts = {}
 
     def _cache_font(self, size: int):
-        font = Font(full_file_path('rainyhearts.ttf'), size)
+        font = pygame.font.Font(full_file_path('rainyhearts.ttf'), size)
         self._fonts[str(size)] = font
         return font
 
-    def get_font(self, size: int) -> Font:
+    def get_font(self, size: int) -> pygame.font.Font:
         font = self._fonts.get(str(size))
         if font is None:
             font = self._cache_font(size)
         return font
 
-    def render_text(self, text: str, size: int) -> SurfaceType:
+    def render_text(self, text: str, size: int, colour: pygame.Color = DEFAULT_TEXT_COLOUR) -> pygame.SurfaceType:
         font = self.get_font(size)
-        return font.render(text, True, TEXT_COLOUR)
+        return font.render(text, True, colour)

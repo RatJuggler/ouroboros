@@ -1,13 +1,12 @@
 import pygame
 import random
 
-from typing import Tuple
+from ouroboros.font_cache import FontCache, DEFAULT_TEXT_COLOUR
+from ouroboros.utils import Point
 
-from ouroboros.font_cache import FontCache
-
-BACKGROUND_COLOUR = (64, 64, 64)
-GRID_COLOUR = (128, 128, 128)
-SEPARATOR_COLOUR = (255, 255, 255)
+BACKGROUND_COLOUR = pygame.Color('GRAY25')
+GRID_COLOUR = pygame.Color('SLATEGRAY')
+SEPARATOR_COLOUR = pygame.Color('WHITE')
 
 
 class Display:
@@ -25,21 +24,21 @@ class Display:
         pygame.display.set_caption('Ouroboros')
         self._font_cache = FontCache()
 
-    def show_text(self, text: str, size: int, x_prop: float, y_prop: float) -> None:
-        text_img = self._font_cache.render_text(text, size)
+    def show_text(self, text: str, size: int, x_prop: float, y_prop: float, colour: pygame.Color = DEFAULT_TEXT_COLOUR) -> None:
+        text_img = self._font_cache.render_text(text, size, colour)
         rect = text_img.get_rect()
         self.blit(text_img, (self.DISPLAY_WIDTH * x_prop - rect.width // 2, self.DISPLAY_HEIGHT * y_prop - rect.height // 2))
 
-    def show_fixed_text(self, text: str, size: int, at_cell: Tuple[int, int]) -> None:
+    def show_fixed_text(self, text: str, size: int, at_cell: Point) -> None:
         text_img = self._font_cache.render_text(text, size)
         self.blit(text_img, (at_cell[0] * self.CELL_SIZE + 2, at_cell[1] * self.CELL_SIZE + 2))
 
-    def create_surface(self, image_sheet: pygame.Surface, image_start: Tuple[int, int]) -> pygame.Surface:
+    def create_surface(self, image_sheet: pygame.Surface, image_start: Point) -> pygame.Surface:
         surface = pygame.Surface((self.CELL_SIZE, self.CELL_SIZE), pygame.SRCALPHA)
         surface.blit(image_sheet, (0, 0), (image_start[0], image_start[1], self.CELL_SIZE, self.CELL_SIZE))
         return surface
 
-    def get_rect(self, at_cell: Tuple[int, int]) -> pygame.Rect:
+    def get_rect(self, at_cell: Point) -> pygame.Rect:
         return pygame.Rect(at_cell[0] * self.CELL_SIZE, at_cell[1] * self.CELL_SIZE, self.CELL_SIZE, self.CELL_SIZE)
 
     def blit(self, image: pygame.Surface, rect: pygame.rect) -> None:
@@ -48,14 +47,14 @@ class Display:
     def move_ip(self, rect: pygame.rect, delta_x: int, delta_y: int) -> None:
         rect.move_ip(delta_x * self.CELL_SIZE, delta_y * self.CELL_SIZE)
 
-    def valid_position(self, position: Tuple[int, int]) -> bool:
+    def valid_position(self, position: Point) -> bool:
         return 0 <= position[0] < self.CELL_COLUMNS and 1 <= position[1] < self.CELL_ROWS
 
-    def get_random_position(self, edge_buffer: int) -> Tuple[int, int]:
+    def get_random_position(self, edge_buffer: int) -> Point:
         return random.randint(edge_buffer, self.CELL_COLUMNS - edge_buffer - 1), \
             random.randint(edge_buffer + 1, self.CELL_ROWS - edge_buffer - 1)
 
-    def get_center(self) -> Tuple[int, int]:
+    def get_center(self) -> Point:
         return (self.CELL_COLUMNS - 1) // 2, self.CELL_ROWS // 2
 
     def draw_background(self, draw_grid: bool = True, score: int = 0) -> None:

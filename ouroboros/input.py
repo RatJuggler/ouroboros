@@ -29,7 +29,7 @@ class Selected(enum.Enum):
     CONTINUE = 99
 
 
-def wait_for_selection(incl_continue: bool = True, incl_difficulty: bool = False) -> Selected:
+def check_for_selection(wait: bool = True, incl_continue: bool = True, incl_difficulty: bool = False) -> Optional[Selected]:
     while True:
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -46,6 +46,8 @@ def wait_for_selection(incl_continue: bool = True, incl_difficulty: bool = False
                         return Selected.DIFFICULTY_MEDIUM
                     if event.key == K_3:
                         return Selected.DIFFICULTY_HARD
+        if not wait:
+            break
 
 
 def check_for_override():
