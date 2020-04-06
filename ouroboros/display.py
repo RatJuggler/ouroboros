@@ -4,9 +4,9 @@ import random
 from ouroboros.font_cache import FontCache, DEFAULT_TEXT_COLOUR
 from ouroboros.utils import Point
 
-BACKGROUND_COLOUR = (64, 64, 64)
-GRID_COLOUR = (128, 128, 128)
-SEPARATOR_COLOUR = (255, 255, 255)
+BACKGROUND_COLOUR = pygame.Color('GRAY25')
+GRID_COLOUR = pygame.Color('SLATEGRAY')
+SEPARATOR_COLOUR = pygame.Color('WHITE')
 
 
 class Display:
