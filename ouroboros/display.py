@@ -1,7 +1,7 @@
 import pygame
 import random
 
-from ouroboros.font_cache import FontCache
+from ouroboros.font_cache import FontCache, DEFAULT_TEXT_COLOUR
 from ouroboros.utils import Point
 
 BACKGROUND_COLOUR = (64, 64, 64)
@@ -24,8 +24,8 @@ class Display:
         pygame.display.set_caption('Ouroboros')
         self._font_cache = FontCache()
 
-    def show_text(self, text: str, size: int, x_prop: float, y_prop: float) -> None:
-        text_img = self._font_cache.render_text(text, size)
+    def show_text(self, text: str, size: int, x_prop: float, y_prop: float, colour: pygame.Color = DEFAULT_TEXT_COLOUR) -> None:
+        text_img = self._font_cache.render_text(text, size, colour)
         rect = text_img.get_rect()
         self.blit(text_img, (self.DISPLAY_WIDTH * x_prop - rect.width // 2, self.DISPLAY_HEIGHT * y_prop - rect.height // 2))
 

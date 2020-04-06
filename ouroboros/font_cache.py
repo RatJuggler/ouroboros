@@ -1,9 +1,10 @@
+from pygame import Color
 from pygame.font import Font
 from pygame.surface import SurfaceType
 
 from ouroboros.utils import full_file_path
 
-TEXT_COLOUR = (255, 255, 255)
+DEFAULT_TEXT_COLOUR = (255, 255, 255)
 
 
 class FontCache:
@@ -22,6 +23,6 @@ class FontCache:
             font = self._cache_font(size)
         return font
 
-    def render_text(self, text: str, size: int) -> SurfaceType:
+    def render_text(self, text: str, size: int, colour: Color = DEFAULT_TEXT_COLOUR) -> SurfaceType:
         font = self.get_font(size)
-        return font.render(text, True, TEXT_COLOUR)
+        return font.render(text, True, colour)
