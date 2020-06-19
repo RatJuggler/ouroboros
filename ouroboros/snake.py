@@ -57,10 +57,7 @@ class Snake:
 
     def move_head(self, new_direction: str) -> bool:
         self._head.mark_prev()
-        move_ok = self._head.move_in(new_direction) and pygame.sprite.spritecollideany(self._head, self._body) is None
-        if not move_ok:
-            self._sounds.play_sound('died')
-        return move_ok
+        return self._head.move_in(new_direction) and pygame.sprite.spritecollideany(self._head, self._body) is None
 
     def move_body(self) -> None:
         prev_segment_direction = self._head.get_prev_direction()

@@ -106,6 +106,8 @@ class Game:
         Show the game over screen and wait for the key to restart.
         :return: MenuKey to continue or exit the game
         """
+        pygame.mixer.music.fadeout(MUSIC_FADEOUT)
+        self._sounds.play_sound('died')
         selection = None
         title_swap = True
         clock = pygame.time.Clock()
