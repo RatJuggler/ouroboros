@@ -26,7 +26,8 @@ setup(
             'sprite_images.json',
             'rainyhearts.ttf',
             'died.wav',
-            'eat.wav'
+            'eat.wav',
+            'music.mp3'
         ],
     },
     entry_points={

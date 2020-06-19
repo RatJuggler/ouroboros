@@ -7,6 +7,7 @@ from ouroboros.food import Food
 from ouroboros.snake import Snake
 from ouroboros.sounds import Sounds
 from ouroboros.sprite_images import SpriteImages
+from ouroboros.utils import full_file_path
 
 LOW_GREEN = pygame.Color('GREENYELLOW')
 HIGH_GREEN = pygame.Color('SPRINGGREEN')
@@ -19,12 +20,16 @@ class Game:
 
     def __init__(self, windowed: bool) -> None:
         """
-        Initialise the display controller and sprite image cache.
+        Initialise the display controller, sprite image cache and sound effect cache.
+        Start playing the music track (at a reduced volume) in an endless loop.
         :param windowed: display in a window rather than full-screen
         """
         self._display = Display(windowed)
         self._images = SpriteImages.load_images(self._display)
         self._sounds = Sounds.load_sounds()
+        pygame.mixer.music.load(full_file_path('music.mp3'))
+        pygame.mixer.music.set_volume(0.25)
+        pygame.mixer.music.play(-1)
 
     def _attract(self) -> Selected:
         """

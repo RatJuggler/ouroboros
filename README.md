@@ -33,6 +33,7 @@ Options:
   --help          Show this message and exit.
 ```
 ## Attributions
+- Music by [@f4rside](https://twitter.com/f4rside) - [Bandcamp](https://f4rside.bandcamp.com/).  
 - Rainy Hearts font by [Camellina](https://www.dafont.com/rainyhearts.font).
 - Sounds from [OpenGameArt](https://opengameart.org/).
 - Sprites created using [aseprite](https://dacap.itch.io/aseprite).
