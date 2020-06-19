@@ -27,7 +27,8 @@ setup(
             'rainyhearts.ttf',
             'died.wav',
             'eat.wav',
-            'music.mp3'
+            'menu_music.mp3',
+            'game_music.mp3'
         ],
     },
     entry_points={

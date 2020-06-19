@@ -11,6 +11,8 @@ from ouroboros.utils import full_file_path
 
 LOW_GREEN = pygame.Color('GREENYELLOW')
 HIGH_GREEN = pygame.Color('SPRINGGREEN')
+MUSIC_VOLUME = 0.5
+MUSIC_FADEOUT = 1000
 
 
 class Game:
@@ -21,15 +23,11 @@ class Game:
     def __init__(self, windowed: bool) -> None:
         """
         Initialise the display controller, sprite image cache and sound effect cache.
-        Start playing the music track (at a reduced volume) in an endless loop.
         :param windowed: display in a window rather than full-screen
         """
         self._display = Display(windowed)
         self._images = SpriteImages.load_images(self._display)
         self._sounds = Sounds.load_sounds()
-        pygame.mixer.music.load(full_file_path('music.mp3'))
-        pygame.mixer.music.set_volume(0.25)
-        pygame.mixer.music.play(-1)
 
     def _attract(self) -> Selected:
         """
@@ -124,17 +122,26 @@ class Game:
     def run(self) -> None:
         """
         Entry point, show screens and play game.
+        Play the music tracks (at a reduced volume) in endless loops.
         :return: No meaningful return
         """
         while True:
+            pygame.mixer.music.load(full_file_path('menu_music.mp3'))
+            pygame.mixer.music.set_volume(MUSIC_VOLUME)
+            pygame.mixer.music.play(-1)
             if self._attract() == Selected.QUIT:
                 break
             difficulty = self._difficulty()
             if difficulty == Selected.QUIT:
                 break
+            pygame.mixer.music.fadeout(MUSIC_FADEOUT)
+            pygame.mixer.music.load(full_file_path('game_music.mp3'))
+            pygame.mixer.music.set_volume(MUSIC_VOLUME)
+            pygame.mixer.music.play(-1)
             self._play(difficulty)
             if self._over() == Selected.QUIT:
                 break
+            pygame.mixer.music.fadeout(MUSIC_FADEOUT)
 
 
 @click.command(help="""
