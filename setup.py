@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='ouroboros',
-    version='1.0.0',
+    version='1.1.0',
     description='My take on the snake game.',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -36,8 +36,8 @@ setup(
         ]
     },
     install_requires=[
-        'pygame',
-        'click'
+        'pygame~=1.9.6',
+        'click~=7.1.1'
     ],
     test_suite='tests',
     tests_require=[
