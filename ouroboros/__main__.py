@@ -7,9 +7,12 @@ from ouroboros.food import Food
 from ouroboros.snake import Snake
 from ouroboros.sounds import Sounds
 from ouroboros.sprite_images import SpriteImages
+from ouroboros.utils import full_file_path
 
 LOW_GREEN = pygame.Color('GREENYELLOW')
 HIGH_GREEN = pygame.Color('SPRINGGREEN')
+MUSIC_VOLUME = 0.5
+MUSIC_FADEOUT = 1000
 
 
 class Game:
@@ -19,7 +22,7 @@ class Game:
 
     def __init__(self, windowed: bool) -> None:
         """
-        Initialise the display controller and sprite image cache.
+        Initialise the display controller, sprite image cache and sound effect cache.
         :param windowed: display in a window rather than full-screen
         """
         self._display = Display(windowed)
@@ -103,6 +106,8 @@ class Game:
         Show the game over screen and wait for the key to restart.
         :return: MenuKey to continue or exit the game
         """
+        pygame.mixer.music.fadeout(MUSIC_FADEOUT)
+        self._sounds.play_sound('died')
         selection = None
         title_swap = True
         clock = pygame.time.Clock()
@@ -119,17 +124,26 @@ class Game:
     def run(self) -> None:
         """
         Entry point, show screens and play game.
+        Play the music tracks (at a reduced volume) in endless loops.
         :return: No meaningful return
         """
         while True:
+            pygame.mixer.music.load(full_file_path('menu_music.mp3'))
+            pygame.mixer.music.set_volume(MUSIC_VOLUME)
+            pygame.mixer.music.play(-1)
             if self._attract() == Selected.QUIT:
                 break
             difficulty = self._difficulty()
             if difficulty == Selected.QUIT:
                 break
+            pygame.mixer.music.fadeout(MUSIC_FADEOUT)
+            pygame.mixer.music.load(full_file_path('game_music.mp3'))
+            pygame.mixer.music.set_volume(MUSIC_VOLUME)
+            pygame.mixer.music.play(-1)
             self._play(difficulty)
             if self._over() == Selected.QUIT:
                 break
+            pygame.mixer.music.fadeout(MUSIC_FADEOUT)
 
 
 @click.command(help="""
